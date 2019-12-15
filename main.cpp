@@ -5,6 +5,7 @@ using namespace std;
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "vm.hpp"
+#include "oclVM.hpp"
 
 void testHello() {
     int hello[] = {
@@ -87,5 +88,19 @@ int main(int argc, char** argv) {
     std::cout << "----" << endl;
     testFunction();
     
+    int hello[] = {
+        ICONST, 128,
+        ICONST, 1,
+        IADD,
+        GSTORE, 0,
+        GLOAD, 0,
+        PRINT,
+        HALT
+    };
+
+    OCLVM oclVM(hello, 0);
+    oclVM.setVMConfig(100, 100);
+    oclVM.setTrace();
+
     return 0;
 }

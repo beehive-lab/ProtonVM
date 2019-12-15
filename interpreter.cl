@@ -1,38 +1,63 @@
-#include <iostream>
-#include <string>
-#include "instruction.hpp"
-#include "bytecodes.hpp"
-#include "vm.hpp"
 
-using namespace std;
+#define IADD 1
+#define ISUB 2
+#define IMUL 3
+#define ILT 4
+#define IEQ 5
+#define BR 6
+#define BRT 7  // branch if true
+#define BRF 8  // branch if false
+#define ICONST 9
+#define LOAD 10
+#define GLOAD 11
+#define STORE 12
+#define GSTORE 13
+#define PRINT 14
+#define POP 15
+#define HALT 16
+#define CALL 17
+#define RET 18
+#define DUP 19    // duplicate the top of the stack
+#define IDIV 20   // integer division
+#define LSHIFT 21 // shift to the left (multiply by two)
+#define RSHIFT 22 // shift to the left (multiply by two)
+#define ICONST1 23 // load constant 1 into the stack
 
-VM::VM(int* code, int mainByteCodeIndex) {
-    this->code = code;
-    this->codeSize = *(&code + 1) - code;
-    this->ip = mainByteCodeIndex;
-    this->ins = createAllInstructions();
+#define TRUE 1
+#define FALSE 0
+
+void printTrace(int opcode) {
+    // empty implementation for now
 }
 
-VM::~VM() {
-    if (vmAllocated) {
-        delete[] this->stack;
-        delete[] this->data;
-    }
-}
+/**
+ * OpenCL code for the bytecode interpreter
+ */
+__kernel void interpreter(__global int* code, 
+                          __global int* stack, 
+                          __global int* data, 
+                          __global char* buffer, 
+                          const int codeSize, 
+                          int ip, 
+                          int fp, 
+                          int sp,
+                          int trace) 
+{
+    char valueString[] = {'[', 'V', 'M', ']', ' ', '='};
+    int bufferIndex = 0;
 
-void VM::runInterpreter() {
     while (ip < codeSize) {
         int opcode = code[ip];
 
-        if (trace) {
+        if (trace == 1) {
             printTrace(opcode);       
         }
+
         ip++;
         int a, b, c, address, value, numArgs;
         bool doHalt = false;
 
         switch (opcode) {
-
             case DUP:
                 // Duplicate the stack
                 a = stack[sp];
@@ -126,7 +151,11 @@ void VM::runInterpreter() {
                 break;
             case PRINT:
                 value = stack[sp--];
-                std::cout << "[VM] " << value << std::endl;
+                buffer[0] = 'v';
+                for (int i = 0; i < 6; i++) {
+                    buffer[bufferIndex++] = valueString[i];
+                }
+                //std::cout << "[VM] " << value << std::endl;
                 break;
             case CALL:
                 address = code[ip++];
@@ -153,10 +182,10 @@ void VM::runInterpreter() {
                 doHalt = true;
                 break;
             default:
-                cout << "Error" << endl;
+                doHalt = true;
+                //cout << "Error" << endl;
                 break;
         }
-
         if (doHalt) {
             break;
         }
