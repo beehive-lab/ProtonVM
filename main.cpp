@@ -77,7 +77,6 @@ void testFunction() {
     vm.runInterpreter();
 }
 
-
 int main(int argc, char** argv) {
     std::cout << "----" << endl;
     testHello();
