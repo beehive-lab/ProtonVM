@@ -28,9 +28,7 @@ void VM::setVMConfig(int stackSize, int dataSize) {
 
 void VM::setTrace() {
     this->trace = true;
-    }
-
-
+}
 
 void VM::printTrace(int opcode) {
     Instruction instruction = ins[opcode];
@@ -51,7 +49,7 @@ void VM::runInterpreter() {
             printTrace(opcode);       
         }
         ip++;
-        int a, b, c, position, value;
+        int a, b, c, address, value, numArgs;
         bool doHalt = false;
 
         switch (opcode) {
@@ -104,19 +102,19 @@ void VM::runInterpreter() {
                 stack[++sp] = c;
                 break;
             case BR:
-                position = code[ip++];
-                ip = position;
+                address = code[ip++];
+                ip = address;
                 break;
             case BRT:
-                position = code[ip++];
+                address = code[ip++];
                 if (stack[sp--] == TRUE) {
-                    ip = position;
+                    ip = address;
                 }
                 break;
             case BRF:
-                position = code[ip++];
+                address = code[ip++];
                 if (stack[sp--] == FALSE) {
-                    ip = position;
+                    ip = address;
                 }
                 break;
             case ICONST:
@@ -128,28 +126,46 @@ void VM::runInterpreter() {
                 stack[++sp] = 1;
                 break;
             case LOAD:
-                position = code[ip++];
-                value = stack[fp + position];
+                address = code[ip++];
+                value = stack[fp + address];
                 stack[++sp] = value;
                 break;
             case GLOAD:
-                position = code[ip++];
-                value = data[position];
+                address = code[ip++];
+                value = data[address];
                 stack[++sp] = value;
                 break;
             case STORE:
                 value = stack[sp--];
-                position = code[ip++];
-                stack[fp + position] = value;
+                address = code[ip++];
+                stack[fp + address] = value;
                 break;
             case GSTORE:
                 value = stack[sp--];
-                position = code[ip++];
-                data[position] = value;
+                address = code[ip++];
+                data[address] = value;
                 break;
             case PRINT:
                 value = stack[sp--];
                 std::cout << "[VM] " << value << std::endl;
+                break;
+            case CALL:
+                address = code[ip++];
+                numArgs = code[ip++];  // num arguments
+                stack[++sp] = numArgs;
+                stack[++sp] = fp;
+                stack[++sp] = ip;
+                fp = sp;
+                ip = address;
+                break;
+            case RET:
+                value = stack[sp--];
+                sp = fp;
+                ip = stack[sp--];
+                fp = stack[sp--];
+                numArgs = stack[sp--];
+                sp -= numArgs;
+                stack[++sp] = value;  // return value on top of the stack
                 break;
             case POP:
                 sp--;

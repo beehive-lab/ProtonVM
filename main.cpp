@@ -57,10 +57,36 @@ void testProgram2() {
     vm.runInterpreter();
 }
 
+void testFunction() {
+    int functionCall[] = {
+        // Instruction    address
+        LOAD, -3,		// 0
+        ICONST, 2,		// 2
+        IMUL,			// 4
+        RET,			// 5
+
+        ICONST, 128, 	// 6 -- this is the main
+        CALL, 0, 1, 	// 8
+        PRINT,			// 11
+        HALT			// 12
+    };
+    Instruction* ins = createAllInstructions();
+    VM vm(functionCall,  6); // Start address is 6
+    vm.setVMConfig(100, 100);
+    vm.setTrace();
+    vm.runInterpreter();
+}
+
 
 int main(int argc, char** argv) {
+    std::cout << "----" << endl;
     testHello();
+    std::cout << "----" << endl;
     testProgram1();
+    std::cout << "----" << endl;
     testProgram2();
+    std::cout << "----" << endl;
+    testFunction();
+    
     return 0;
 }
