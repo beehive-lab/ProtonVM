@@ -1,0 +1,11 @@
+kernel_emulator:
+	aoc interpreter.cl -v -o interpreter.aocx -board=p385a_sch_ax115 --report -march=emulator
+
+kernel:
+	aoc interpreter.cl -v -o interpreter.aocx -board=p385a_sch_ax115 --report 
+
+run_emulator:
+	env CL_CONTEXT_EMULATOR_DEVICE_INTELFPGA=1  ./main
+
+run:
+	echo "Type: ./saxpy <cpu|gpu|fpga> size <bitstream_name>"
