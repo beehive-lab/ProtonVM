@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "instruction.hpp"
 #include "bytecodes.hpp"
+
 
 using namespace std;
 
@@ -15,6 +17,8 @@ class AbstractVM {
         void setVMConfig(int stackSize, int dataSize) {
             this->stack = new int[stackSize];
             this->data = new int[dataSize];
+            this->stackSize = stackSize;
+            this->dataSize = dataSize;
             vmAllocated = true;
         }
 
@@ -36,15 +40,17 @@ class AbstractVM {
         virtual void runInterpreter() = 0;
 
     protected:
-        int* code;
+        vector<int> code;
         int* stack;
         int* data;
+
+        int codeSize;
+        int stackSize;
+        int dataSize;
 
         int ip;
         int sp = -1;
         int fp;
-
-        int codeSize = 0;
 
         int TRUE = 1;
         int FALSE = 0;

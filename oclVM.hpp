@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "abstractVM.hpp"
@@ -20,7 +21,7 @@ using namespace std;
 class OCLVM : public AbstractVM {
 
     public:
-        OCLVM(int* code, int mainByteCodeIndex);
+        OCLVM(vector<int> code, int mainByteCodeIndex);
 
         ~OCLVM();
 
@@ -43,14 +44,18 @@ class OCLVM : public AbstractVM {
         cl_context context;
         cl_command_queue commandQueue;
         cl_kernel kernel1;
-        cl_kernel kernel2;
         cl_program program;
         char *source;
         size_t localWorkSize[1];
         size_t lWorkSize;
 
+        cl_event writeEvent;
+        cl_event kernelEvent;
+        cl_event readEvent;
+
         int platformNumber = 0;
 
+        char* buffer;
 };
 
 #endif 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "abstractVM.hpp"
@@ -12,7 +13,7 @@ using namespace std;
 class VM : public AbstractVM {
 
     public:
-        VM(int* code, int mainByteCodeIndex);
+        VM(vector<int> code, int mainByteCodeIndex);
 
         ~VM();
 

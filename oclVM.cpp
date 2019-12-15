@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "oclVM.hpp"
@@ -9,9 +10,10 @@
 
 using namespace std;
 
-OCLVM::OCLVM(int* code, int mainByteCodeIndex) {
+OCLVM::OCLVM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
-    this->codeSize = *(&code + 1) - code;
+    this->codeSize = code.size();
+    cout << "THIS CODE SIZE: " << this->codeSize << endl;
     this->ip = mainByteCodeIndex;
     this->ins = createAllInstructions();
 }
@@ -102,14 +104,52 @@ int OCLVM::initOpenCL() {
 
 void OCLVM::runInterpreter() {
 
+    this->buffer = new char[100000];
+
+    cout <<" CODE SIZE: " << this->codeSize << endl;
+
     // Create all buffers
+    cl_int status;
+ 	cl_mem d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
+    if (status != CL_SUCCESS) {
+        cout << "Error in clCreateBuffer: " << status << endl;
+    }
+    cl_mem d_stack = clCreateBuffer(context, CL_MEM_READ_WRITE, stackSize * sizeof(int), NULL, &status);
+    cl_mem d_data = clCreateBuffer(context, CL_MEM_READ_WRITE, dataSize * sizeof(int), NULL, &status);
+    cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, 100000 * sizeof(char), NULL, &status);
+    
+    // Copy code from HOST->DEVICE
+    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
+    if (status != CL_SUCCESS) {
+        cout << "Error in clEnqueueWriteBuffer" << endl;
+    }
 
     // Push Arguments
+	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
+    status |= clSetKernelArg(kernel1, 1, sizeof(cl_mem), &d_stack);
+    status |= clSetKernelArg(kernel1, 2, sizeof(cl_mem), &d_data);
+    status |= clSetKernelArg(kernel1, 3, sizeof(cl_mem), &d_buffer);
+	status |= clSetKernelArg(kernel1, 4, sizeof(cl_int), &codeSize);
+    status |= clSetKernelArg(kernel1, 5, sizeof(cl_int), &ip);
+    status |= clSetKernelArg(kernel1, 6, sizeof(cl_int), &fp);
+    status |= clSetKernelArg(kernel1, 7, sizeof(cl_int), &sp);
+    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &trace);
+    if (status != CL_SUCCESS) {
+		cout << "Error in clSetKernelArgs" << endl;
+	}
 
     // Launch Kernel
+    size_t globalWorkSize[] = {1};
+    status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, NULL, 0, NULL, &kernelEvent);
+    if (status != CL_SUCCESS) {
+		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
+	}
 
     // Obtain buffer
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char)*100000, buffer, 0, NULL, &readEvent);
 
+    cout << "Program finished: " << endl;
+    cout << "Result: " << buffer;
 }
 
 // ///////////////////////////////////////////////////////

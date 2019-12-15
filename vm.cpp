@@ -1,14 +1,15 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "vm.hpp"
 
 using namespace std;
 
-VM::VM(int* code, int mainByteCodeIndex) {
+VM::VM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
-    this->codeSize = *(&code + 1) - code;
+    this->codeSize = code.size();
     this->ip = mainByteCodeIndex;
     this->ins = createAllInstructions();
 }
@@ -23,7 +24,6 @@ VM::~VM() {
 void VM::runInterpreter() {
     while (ip < codeSize) {
         int opcode = code[ip];
-
         if (trace) {
             printTrace(opcode);       
         }
@@ -32,7 +32,6 @@ void VM::runInterpreter() {
         bool doHalt = false;
 
         switch (opcode) {
-
             case DUP:
                 // Duplicate the stack
                 a = stack[sp];

@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <vector>
 using namespace std;
 
 #include "instruction.hpp"
@@ -8,7 +9,7 @@ using namespace std;
 #include "oclVM.hpp"
 
 void testHello() {
-    int hello[] = {
+    vector<int> hello = {
         ICONST, 128,
         ICONST, 1,
         IADD,
@@ -17,7 +18,6 @@ void testHello() {
         PRINT,
         HALT
     };
-    Instruction* ins = createAllInstructions();
     VM vm(hello,  0);
     vm.setVMConfig(100, 100);
     vm.setTrace();
@@ -25,7 +25,7 @@ void testHello() {
 }
 
 void testProgram1() {
-    int program1[] = {
+    vector<int> program1 = {
         ICONST, 100,
         ICONST, 100,
         IADD,
@@ -34,7 +34,6 @@ void testProgram1() {
         PRINT,
         HALT
     };
-    Instruction* ins = createAllInstructions();
     VM vm(program1,  0);
     vm.setVMConfig(100, 100);
     vm.setTrace();
@@ -42,7 +41,7 @@ void testProgram1() {
 }
 
 void testProgram2() {
-    int program2[] = {
+    vector<int> program2 = {
         ICONST, 100,
         LSHIFT,
         DUP,
@@ -51,7 +50,6 @@ void testProgram2() {
         PRINT,
         HALT
     };
-    Instruction* ins = createAllInstructions();
     VM vm(program2,  0);
     vm.setVMConfig(100, 100);
     vm.setTrace();
@@ -59,7 +57,7 @@ void testProgram2() {
 }
 
 void testFunction() {
-    int functionCall[] = {
+    vector<int> functionCall = {
         // Instruction    address
         LOAD, -3,		// 0
         ICONST, 2,		// 2
@@ -88,7 +86,7 @@ int main(int argc, char** argv) {
     std::cout << "----" << endl;
     testFunction();
     
-    int hello[] = {
+    vector<int> hello = {
         ICONST, 128,
         ICONST, 1,
         IADD,
@@ -97,10 +95,12 @@ int main(int argc, char** argv) {
         PRINT,
         HALT
     };
-
+    // OpenCL Interpreter
     OCLVM oclVM(hello, 0);
     oclVM.setVMConfig(100, 100);
     oclVM.setTrace();
+    oclVM.initOpenCL();
+    oclVM.runInterpreter();
 
     return 0;
 }
