@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
     OCLVM oclVM(hello, 0);
     oclVM.setVMConfig(100, 100);
     oclVM.setTrace();
+    oclVM.setPlatform(1);
     oclVM.initOpenCL("interpreter.aocx", true);
     oclVM.runInterpreter();
 
