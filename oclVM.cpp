@@ -146,8 +146,6 @@ void OCLVM::runInterpreter() {
 
     this->buffer = new char[100000];
 
-    cout <<" CODE SIZE: " << this->codeSize << endl;
-
     // Create all buffers
     cl_int status;
  	cl_mem d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
@@ -180,7 +178,8 @@ void OCLVM::runInterpreter() {
 
     // Launch Kernel
     size_t globalWorkSize[] = {1};
-    status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, NULL, 0, NULL, &kernelEvent);
+    size_t localWorkSize[] = {1};
+    status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, localWorkSize, 0, NULL, &kernelEvent);
     if (status != CL_SUCCESS) {
 		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
 	}
