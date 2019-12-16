@@ -1,28 +1,31 @@
 #ifndef BYTECODES_H
 #define BYTECODES_H
 
-const int IADD = 1;
-const int ISUB = 2;
-const int IMUL = 3;
-const int ILT = 4;
-const int IEQ = 5;
-const int BR = 6;
-const int BRT = 7;  // branch if true
-const int BRF = 8;  // branch if false
-const int ICONST = 9;
-const int LOAD = 10;
-const int GLOAD = 11;
-const int STORE = 12;
-const int GSTORE = 13;
-const int PRINT = 14;
-const int POP = 15;
-const int HALT = 16;
-const int CALL = 17;
-const int RET = 18;
-const int DUP = 19;    // duplicate the top of the stack
-const int IDIV = 20;   // integer division
-const int LSHIFT = 21; // shift to the left (multiply by two)
-const int RSHIFT = 22; // shift to the left (multiply by two)
-const int ICONST1 = 23; // load constant 1 into the stack
+#define IADD     1
+#define ISUB     2
+#define IMUL     3
+#define ILT      4
+#define IEQ      5
+#define BR       6
+#define BRT      7   // branch if true
+#define BRF      8   // branch if false
+#define ICONST   9
+#define LOAD    10
+#define GLOAD   11
+#define STORE   12
+#define GSTORE  13
+#define PRINT   14
+#define POP     15
+#define HALT    16
+#define CALL    17
+#define RET     18
+#define DUP     19   // duplicate the top of the stack
+#define IDIV    20   // integer division
+#define LSHIFT  21   // shift to the left (multiply by two)
+#define RSHIFT  22   // shift to the left (multiply by two)
+#define ICONST1 23   // load constant 1 into the stack
+
+#define TRUE 1
+#define FALSE 0
 
 #endif

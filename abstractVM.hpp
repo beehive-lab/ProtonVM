@@ -7,7 +7,6 @@
 #include "instruction.hpp"
 #include "bytecodes.hpp"
 
-
 using namespace std;
 
 class AbstractVM {
@@ -51,9 +50,6 @@ class AbstractVM {
         int ip;
         int sp = -1;
         int fp;
-
-        int TRUE = 1;
-        int FALSE = 0;
 
         bool trace = false;
 
