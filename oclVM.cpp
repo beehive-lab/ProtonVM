@@ -91,9 +91,9 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 	
 	if (status != CL_SUCCESS) {
 		cout << "[WARNING] Using CPU, no GPU available" << endl;
-		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 0, NULL, &numDevices);
+		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &numDevices);
 		devices = (cl_device_id*) malloc(numDevices*sizeof(cl_device_id));
-		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, numDevices, devices, NULL);
+		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, numDevices, devices, NULL);
 	} else {
 		devices = (cl_device_id*) malloc(numDevices*sizeof(cl_device_id));
 		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices, NULL);
