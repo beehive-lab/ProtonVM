@@ -15,8 +15,8 @@ class AbstractVM {
     public:
 
         void setVMConfig(int stackSize, int dataSize) {
-            this->stack = new int[stackSize];
-            this->data = new int[dataSize];
+            this->stack.resize(stackSize);
+            this->data.resize(dataSize);
             this->stackSize = stackSize;
             this->dataSize = dataSize;
             vmAllocated = true;
@@ -41,8 +41,8 @@ class AbstractVM {
 
     protected:
         vector<int> code;
-        int* stack;
-        int* data;
+        vector<int> stack;
+        vector<int> data;
 
         int codeSize;
         int stackSize;

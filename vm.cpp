@@ -16,8 +16,8 @@ VM::VM(vector<int> code, int mainByteCodeIndex) {
 
 VM::~VM() {
     if (vmAllocated) {
-        delete[] this->stack;
-        delete[] this->data;
+        this->stack.clear();
+        this->data.clear();
     }
 }
 

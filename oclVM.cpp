@@ -13,15 +13,14 @@ using namespace std;
 OCLVM::OCLVM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
-    cout << "THIS CODE SIZE: " << this->codeSize << endl;
     this->ip = mainByteCodeIndex;
     this->ins = createAllInstructions();
 }
 
 OCLVM::~OCLVM() {
     if (vmAllocated) {
-        delete[] this->stack;
-        delete[] this->data;
+        this->stack.clear();
+        this->data.clear();
     }
 }
 
@@ -29,7 +28,26 @@ void OCLVM::setPlatform(int numPlatform) {
     this->platformNumber = numPlatform;
 }
 
-int OCLVM::initOpenCL() {
+int OCLVM::readBinaryFile(unsigned char **output, size_t *size, const char *name) {
+    FILE* fp = fopen(name, "rb");
+    if (!fp) {
+        return -1; 
+    }
+    fseek(fp, 0, SEEK_END);
+    *size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    *output = (unsigned char *)malloc(*size);
+    if (!*output) {
+        fclose(fp);
+        return -1; 
+    }
+    fread(*output, *size, 1, fp);
+    fclose(fp);
+    return 0;
+}
+
+
+int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
     cl_int status;	
 	cl_uint numPlatforms = 0;
 
@@ -89,17 +107,39 @@ int OCLVM::initOpenCL() {
 		return -1;
 	}
 
-	const char *sourceFile = "interpreter.cl";
-	source = readSource(sourceFile);
-	program = clCreateProgramWithSource(context, 1, (const char**)&source, NULL, &status);
+    if (loadBinary) {
+        unsigned char* binary = NULL;
+        size_t program_size = 0;
+        readBinaryFile(&binary, &program_size, kernelFilename.c_str());
+ 
+        cl_device_id dev = devices[0];
+        program = clCreateProgramWithBinary(context, 1, &dev, &program_size, (const unsigned char **) &binary,  NULL, &status);
+        if (status != CL_SUCCESS) {
+            cout << "Error in clCreateProgramWithBinary" << endl;
+        }
+ 
+        cl_int buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
+        free(binary);
+ 
+        kernel1 = clCreateKernel(program, "interpreter", &status);
+        if (status != CL_SUCCESS) {
+            cout << "Error in clCreateKernel" << endl;
+            abort();
+        }
 
-	cl_int buildErr;
-	buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
-	kernel1 = clCreateKernel(program, "interpreter", &status);
-	if (status != CL_SUCCESS) {
-		cout << "Error in clCreateKernel" << endl;
-		abort();	
-	}
+    } else { 
+	    const char *sourceFile = kernelFilename.c_str();
+	    source = readSource(sourceFile);
+	    program = clCreateProgramWithSource(context, 1, (const char**)&source, NULL, &status);
+
+	    cl_int buildErr;
+	    buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
+	    kernel1 = clCreateKernel(program, "interpreter", &status);
+	    if (status != CL_SUCCESS) {
+		    cout << "Error in clCreateKernel" << endl;
+		    abort();	
+	    }
+    }
 }
 
 void OCLVM::runInterpreter() {

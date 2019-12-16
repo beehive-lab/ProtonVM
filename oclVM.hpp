@@ -25,7 +25,7 @@ class OCLVM : public AbstractVM {
 
         ~OCLVM();
 
-        int initOpenCL();
+        int initOpenCL(string kernelFilename, bool loadBinary);
 
         void setPlatform(int numPlatform);
 
@@ -36,6 +36,7 @@ class OCLVM : public AbstractVM {
     private:
 
         char* readSource(const char* sourceFilename);
+        int readBinaryFile(unsigned char **output, size_t *size, const char *name);
 
         string platformName;
         cl_uint numPlatforms;
