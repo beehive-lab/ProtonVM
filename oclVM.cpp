@@ -123,7 +123,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
  
         kernel1 = clCreateKernel(program, "interpreter", &status);
         if (status != CL_SUCCESS) {
-            cout << "Error in clCreateKernel" << endl;
+            cout << "Error in clCreateKernel (interpreter)" << endl;
             abort();
         }
 
