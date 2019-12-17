@@ -117,10 +117,8 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
         if (status != CL_SUCCESS) {
             cout << "Error in clCreateProgramWithBinary" << endl;
         }
- 
         cl_int buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
         free(binary);
- 
         kernel1 = clCreateKernel(program, "interpreter", &status);
         if (status != CL_SUCCESS) {
             cout << "Error in clCreateKernel (interpreter). Code error: " << status << endl;
@@ -131,6 +129,10 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 	    const char *sourceFile = kernelFilename.c_str();
 	    source = readSource(sourceFile);
 	    program = clCreateProgramWithSource(context, 1, (const char**)&source, NULL, &status);
+        if (status != CL_SUCCESS) {
+            cout << "Error in clCreateProgramWithSource" << endl;
+		    abort();	
+        }
 
 	    cl_int buildErr;
 	    buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
