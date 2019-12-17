@@ -84,6 +84,7 @@ void runBenchmarkOpenCL() {
         oclVM.initHeap();
         oclVM.runInterpreter();
         long kernelTime = oclVM.getKernelTime();
+        cout << "Kernel Time: " << kernelTime << endl;
         totalTime.push_back(kernelTime);
     }
 
