@@ -162,6 +162,7 @@ void OCLVM::runInterpreter() {
         cout << "Error in clEnqueueWriteBuffer" << endl;
     }
 
+    int t = (trace)? 1: 0;
     // Push Arguments
 	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
     status |= clSetKernelArg(kernel1, 1, sizeof(cl_mem), &d_stack);
@@ -171,7 +172,7 @@ void OCLVM::runInterpreter() {
     status |= clSetKernelArg(kernel1, 5, sizeof(cl_int), &ip);
     status |= clSetKernelArg(kernel1, 6, sizeof(cl_int), &fp);
     status |= clSetKernelArg(kernel1, 7, sizeof(cl_int), &sp);
-    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &trace);
+    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &t);
     if (status != CL_SUCCESS) {
 		cout << "Error in clSetKernelArgs" << endl;
 	}

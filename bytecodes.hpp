@@ -25,7 +25,7 @@
 #define RSHIFT  22   // shift to the left (multiply by two)
 #define ICONST1 23   // load constant 1 into the stack
 
-#define TRUE 1
-#define FALSE 0
+#define TRUE    1
+#define FALSE   0
 
 #endif

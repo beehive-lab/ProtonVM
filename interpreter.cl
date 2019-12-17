@@ -1,8 +1,35 @@
 
 #include "bytecodes.hpp"
 
-void printTrace(int opcode) {
-    // empty implementation for now
+int printTrace(int opcode, __global char* buffer, int bufferIndex) {
+    char valueString[] = {'<', 'O', 'P', '>', ' ', '=', ' '};
+    for (int i = 0; i < 7; i++) {
+        buffer[bufferIndex++] = valueString[i];
+    }
+    bufferIndex = numberToChar(opcode, buffer, bufferIndex);
+    return bufferIndex;
+}
+
+/*
+ * Transform int to char on the target device.
+ */
+int numberToChar(int number, __global char* buffer, int bufferIndex) {
+    int n = number;
+    int digits[10];
+    int counter = 0;
+    while (n > 0) {
+        int value = n % 10;
+        n = n / 10; 
+        digits[counter++] = value;
+    }
+
+    int i = counter;
+    for (; i >= 0; i--) {
+        int value = digits[i];
+        buffer[bufferIndex++] = '0' + value;
+    }
+    buffer[bufferIndex++] = '\n';
+    return bufferIndex;
 }
 
 /**
@@ -20,15 +47,15 @@ __kernel void interpreter(__global int* code,
                           int sp,
                           int trace) 
 {
-    char valueString[] = {'[', 'V', 'M', ']', ' ', '='};
+    char valueString[] = {'[', 'V', 'M', ']', ' ', '=', ' '};
     int bufferIndex = 0;
 
     while (ip < codeSize) {
         int opcode = code[ip];
 
-        if (trace == 1) {
-            printTrace(opcode);       
-        }
+        //if (trace == 1) {
+            bufferIndex = printTrace(opcode, buffer, bufferIndex);       
+        //}
 
         ip++;
         int a, b, c, address, value, numArgs;
@@ -128,11 +155,10 @@ __kernel void interpreter(__global int* code,
                 break;
             case PRINT:
                 value = stack[sp--];
-                buffer[0] = 'v';
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 7; i++) {
                     buffer[bufferIndex++] = valueString[i];
                 }
-                //std::cout << "[VM] " << value << std::endl;
+                bufferIndex = numberToChar(value, buffer, bufferIndex);
                 break;
             case CALL:
                 address = code[ip++];
