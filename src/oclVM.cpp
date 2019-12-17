@@ -28,30 +28,12 @@ void OCLVM::setPlatform(int numPlatform) {
     this->platformNumber = numPlatform;
 }
 
-int OCLVM::readBinaryFile(unsigned char **output, size_t *size, const char *name) {
-    FILE* fp = fopen(name, "rb");
-    if (!fp) {
-        return -1; 
-    }
-    fseek(fp, 0, SEEK_END);
-    *size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    *output = (unsigned char *)malloc(*size);
-    if (!*output) {
-        fclose(fp);
-        return -1; 
-    }
-    fread(*output, *size, 1, fp);
-    fclose(fp);
-    return 0;
+void OCLVM::useLocalMemory() {
+    this->useLocal = true;
 }
 
-long OCLVM::getTime(cl_event event) {
-    clWaitForEvents(1, &event);
-    cl_ulong time_start, time_end;
-    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
-    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
-    return (time_end - time_start);
+void OCLVM::usePrivateMemory() {
+    this->usePrivate = true;
 }
 
 long OCLVM::getKernelTime() {
@@ -117,7 +99,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 	
 	commandQueue = clCreateCommandQueue(context, devices[0], CL_QUEUE_PROFILING_ENABLE, &status);	
 	if (status != CL_SUCCESS || commandQueue == NULL) {
-		cout << "Error in create command" << endl;
+		cout << "Error in create command. Error code = " << status  << endl;
 		return -1;
 	}
 
@@ -129,7 +111,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
         cl_device_id dev = devices[0];
         program = clCreateProgramWithBinary(context, 1, &dev, &program_size, (const unsigned char **) &binary,  NULL, &status);
         if (status != CL_SUCCESS) {
-            cout << "Error in clCreateProgramWithBinary" << endl;
+            cout << "Error in clCreateProgramWithBinary. Error code = " << status  << endl;
         }
         cl_int buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
         free(binary);
@@ -143,7 +125,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 	    source = readSource(sourceFile);
 	    program = clCreateProgramWithSource(context, 1, (const char**)&source, NULL, &status);
         if (status != CL_SUCCESS) {
-            cout << "Error in clCreateProgramWithSource" << endl;
+            cout << "Error in clCreateProgramWithSource. Error code = " << status  << endl;
 		    abort();	
         }
 
@@ -151,7 +133,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 	    buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
 	    kernel1 = clCreateKernel(program, "interpreter", &status);
 	    if (status != CL_SUCCESS) {
-		    cout << "Error in clCreateKernel" << endl;
+		    cout << "Error in clCreateKernel. Error code = " << status  << endl;
 		    abort();	
 	    }
     }
@@ -159,7 +141,7 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 
 void OCLVM::runInterpreter() {
 
-    this->buffer = new char[100000];
+    this->buffer = new char[BUFFER_SIZE];
 
     // Create all buffers
     cl_int status;
@@ -169,15 +151,15 @@ void OCLVM::runInterpreter() {
     }
     cl_mem d_stack = clCreateBuffer(context, CL_MEM_READ_WRITE, stackSize * sizeof(int), NULL, &status);
     cl_mem d_data = clCreateBuffer(context, CL_MEM_READ_WRITE, dataSize * sizeof(int), NULL, &status);
-    cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, 100000 * sizeof(char), NULL, &status);
+    cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
     
     // Copy code from HOST->DEVICE
     status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
     status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
     if (status != CL_SUCCESS) {
-        cout << "Error in clEnqueueWriteBuffer" << endl;
+        cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
     }
-
+    
     int t = (trace)? 1: 0;
     // Push Arguments
 	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
@@ -190,7 +172,7 @@ void OCLVM::runInterpreter() {
     status |= clSetKernelArg(kernel1, 7, sizeof(cl_int), &sp);
     status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &t);
     if (status != CL_SUCCESS) {
-		cout << "Error in clSetKernelArgs" << endl;
+		cout << "Error in clSetKernelArgs. Error code = " << status  << endl;
 	}
 
     // Launch Kernel
@@ -201,11 +183,11 @@ void OCLVM::runInterpreter() {
 		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
 	}
 
-    // Obtain buffer
-    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char)*100000, buffer, 0, NULL, &readEvent);
+    // Obtain buffer and heap
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent);
     status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent2);
      if (status != CL_SUCCESS) {
-        cout << "Error in clEnqueueReadBuffer" << endl;
+        cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
 
     cout << "Program finished: " << endl;
@@ -254,4 +236,30 @@ char* OCLVM::readSource(const char *sourceFilename) {
     } 
     source[size] = '\0';
     return source;
+}
+
+int OCLVM::readBinaryFile(unsigned char **output, size_t *size, const char *name) {
+    FILE* fp = fopen(name, "rb");
+    if (!fp) {
+        return -1; 
+    }
+    fseek(fp, 0, SEEK_END);
+    *size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    *output = (unsigned char *)malloc(*size);
+    if (!*output) {
+        fclose(fp);
+        return -1; 
+    }
+    fread(*output, *size, 1, fp);
+    fclose(fp);
+    return 0;
+}
+
+long OCLVM::getTime(cl_event event) {
+    clWaitForEvents(1, &event);
+    cl_ulong time_start, time_end;
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+    return (time_end - time_start);
 }

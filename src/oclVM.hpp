@@ -29,6 +29,10 @@ class OCLVM : public AbstractVM {
 
         void setPlatform(int numPlatform);
 
+        void useLocalMemory();
+
+        void usePrivateMemory();
+
         long getKernelTime();
 
         // Implementation of the Interpreter in 
@@ -62,6 +66,11 @@ class OCLVM : public AbstractVM {
         int platformNumber = 0;
 
         char* buffer;
+
+        bool useLocal = false;
+        bool usePrivate = false;
+
+        const int BUFFER_SIZE = 100000;
 };
 
 #endif 

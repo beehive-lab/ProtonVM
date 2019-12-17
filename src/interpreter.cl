@@ -1,4 +1,6 @@
-
+/**
+ * OpenCL interpreter for running a subset of Java bytecodes.
+ */
 
 #define IADD     1
 #define ISUB     2
