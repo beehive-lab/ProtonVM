@@ -159,6 +159,45 @@ void testOpenCLInterpreter() {
     oclVM.runInterpreter();
 }
 
+void testOpenCLInterpreterLocal() {
+    vector<int> hello = {
+        ICONST, 128,
+        ICONST, 1,
+        IADD,
+        GSTORE, 0,
+        GLOAD, 0,
+        PRINT,
+        HALT
+    };
+    // OpenCL Interpreter
+    OCLVMLocal oclVM(hello, 0);
+    oclVM.setVMConfig(100, 100);
+    oclVM.setPlatform(0);
+    oclVM.setTrace();
+    oclVM.initOpenCL("src/interpreterLocal.cl", false);
+    oclVM.runInterpreter();
+}
+
+
+void testOpenCLInterpreterPrivate() {
+    vector<int> hello = {
+        ICONST, 128,
+        ICONST, 1,
+        IADD,
+        GSTORE, 0,
+        GLOAD, 0,
+        PRINT,
+        HALT
+    };
+    // OpenCL Interpreter
+    OCLVMPrivate oclVM(hello, 0);
+    oclVM.setVMConfig(100, 100);
+    oclVM.setPlatform(0);
+    oclVM.setTrace();
+    oclVM.initOpenCL("src/interpreterPrivate.cl", false);
+    oclVM.runInterpreter();
+}
+
 void runBenchmarkCplus() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
@@ -259,6 +298,9 @@ void runBenchmarks() {
 }
 
 int main(int argc, char** argv) {
-    runBenchmarks();
+    //runBenchmarks();
+    //runTests();
+    testOpenCLInterpreterLocal();
+    testOpenCLInterpreterPrivate();
     return 0;
 }

@@ -21,11 +21,12 @@ using namespace std;
 class OCLVM : public AbstractVM {
 
     public:
+        OCLVM() {};
         OCLVM(vector<int> code, int mainByteCodeIndex);
 
         ~OCLVM();
 
-        int initOpenCL(string kernelFilename, bool loadBinary);
+        virtual int initOpenCL(string kernelFilename, bool loadBinary);
 
         void setPlatform(int numPlatform);
 
@@ -37,9 +38,9 @@ class OCLVM : public AbstractVM {
 
         // Implementation of the Interpreter in 
         // OpenCL C
-        void runInterpreter();
+        virtual void runInterpreter();
 
-    private:
+    protected:
 
         char* readSource(const char* sourceFilename);
         int readBinaryFile(unsigned char **output, size_t *size, const char *name);
@@ -71,6 +72,22 @@ class OCLVM : public AbstractVM {
         bool usePrivate = false;
 
         const int BUFFER_SIZE = 100000;
+};
+
+class OCLVMLocal : public OCLVM {
+    public:
+        OCLVMLocal() {};
+        OCLVMLocal(vector<int> code, int mainByteCodeIndex);
+        void runInterpreter();
+
+};
+
+class OCLVMPrivate : public OCLVM {
+    public:
+        OCLVMPrivate() {};
+        OCLVMPrivate(vector<int> code, int mainByteCodeIndex);
+        void runInterpreter();
+
 };
 
 #endif 
