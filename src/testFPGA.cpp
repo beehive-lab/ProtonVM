@@ -79,7 +79,7 @@ void runBenchmarkOpenCL() {
     OCLVM oclVM(vectorAdd, 0);
     oclVM.setVMConfig(100, SIZE * 3);
     oclVM.setPlatform(1);
-    oclVM.initOpenCL("src/interpreter.aocx", true);
+    oclVM.initOpenCL("src/build/mykerinterpreternel.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter();
