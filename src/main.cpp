@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
     OCLVM oclVM(hello, 0);
     oclVM.setVMConfig(100, 100);
     oclVM.setTrace();
-    oclVM.initOpenCL("interpreter.cl", false);
+    oclVM.initOpenCL("src/interpreter.cl", false);
     oclVM.runInterpreter();
 
     return 0;

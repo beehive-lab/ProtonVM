@@ -53,9 +53,9 @@ __kernel void interpreter(__global int* code,
     while (ip < codeSize) {
         int opcode = code[ip];
 
-        //if (trace == 1) {
+        if (trace == 1) {
             bufferIndex = printTrace(opcode, buffer, bufferIndex);       
-        //}
+        }
 
         ip++;
         int a, b, c, address, value, numArgs;

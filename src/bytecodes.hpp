@@ -25,6 +25,9 @@
 #define RSHIFT  22   // shift to the left (multiply by two)
 #define ICONST1 23   // load constant 1 into the stack
 
+#define GLOAD_INDEXED  24  // top_stack <- global[top-stack]
+#define GSTORE_INDEXED 25
+
 #define TRUE    1
 #define FALSE   0
 
