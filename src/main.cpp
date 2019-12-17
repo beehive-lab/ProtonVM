@@ -298,8 +298,8 @@ void runBenchmarks() {
 }
 
 int main(int argc, char** argv) {
-    runBenchmarks();
-    // runTests();
+    //runBenchmarks();
+    runTests();
     // testOpenCLInterpreterLocal();
     // testOpenCLInterpreterPrivate();
     return 0;

@@ -11,19 +11,21 @@ using namespace std;
 #include "oclVM.hpp"
 #include "stats.hpp"
 
+#define SIZE 1000
+
 void runBenchmarkCplus() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
             ICONST, 0,
             DUP,
-            ICONST, 50000000,    // Define the vector size
+            ICONST, SIZE,    // Define the vector size
             IEQ,
             BRT, 23,
             DUP,    // offset for each array to load
             DUP,    // offset for each array to load
-            GLOAD_INDEXED, 50000000,
+            GLOAD_INDEXED, SIZE,
             LOAD, 1,   // load from position 1
-            GLOAD_INDEXED, 100000000,
+            GLOAD_INDEXED, SIZE * 2,
             IADD,
             GSTORE_INDEXED, 0,
             ICONST1,
@@ -37,7 +39,7 @@ void runBenchmarkCplus() {
 
     for (int i = 0; i < 11; i++) {
         VM vm(vectorAdd,  0); 
-        vm.setVMConfig(100, 150000000);
+        vm.setVMConfig(100, SIZE * 3);
         vm.initHeap();
         auto start_time = chrono::high_resolution_clock::now();
         vm.runInterpreter();
@@ -55,14 +57,14 @@ void runBenchmarkOpenCL() {
     vector<int> vectorAdd = {
             ICONST, 0,
             DUP,
-            ICONST, 50000000,    // Define the vector size
+            ICONST, SIZE,    // Define the vector size
             IEQ,
             BRT, 23,
             DUP,    // offset for each array to load
             DUP,    // offset for each array to load
-            GLOAD_INDEXED, 50000000,
+            GLOAD_INDEXED, SIZE,
             LOAD, 1,   // load from position 1
-            GLOAD_INDEXED, 100000000,
+            GLOAD_INDEXED, SIZE * 2,
             IADD,
             GSTORE_INDEXED, 0,
             ICONST1,
@@ -74,11 +76,11 @@ void runBenchmarkOpenCL() {
 
     vector<long> totalTime;
 
-    for (int i = 0; i < 11; i++) {
-        OCLVM oclVM(vectorAdd, 0);
-        oclVM.setVMConfig(100, 150000000);
-        oclVM.setPlatform(1);
-        oclVM.initOpenCL("src/interpreter.aocx", true);
+    OCLVM oclVM(vectorAdd, 0);
+    oclVM.setVMConfig(100, SIZE * 3);
+    oclVM.setPlatform(1);
+    oclVM.initOpenCL("src/interpreter.aocx", true);
+    for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter();
         long kernelTime = oclVM.getKernelTime();

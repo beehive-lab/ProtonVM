@@ -28,6 +28,8 @@ class OCLVM : public AbstractVM {
 
         virtual int initOpenCL(string kernelFilename, bool loadBinary);
 
+        void createBuffers();
+
         void setPlatform(int numPlatform);
 
         void useLocalMemory();
@@ -70,6 +72,13 @@ class OCLVM : public AbstractVM {
 
         bool useLocal = false;
         bool usePrivate = false;
+
+        cl_mem d_code;
+        cl_mem d_stack;
+        cl_mem d_data;
+        cl_mem d_buffer;
+
+        bool buffersCreated = false;
 
         const int BUFFER_SIZE = 100000;
 };

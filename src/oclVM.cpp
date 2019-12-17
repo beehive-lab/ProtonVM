@@ -139,22 +139,30 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
     }
 }
 
-void OCLVM::runInterpreter() {
-
+void OCLVM::createBuffers() {
     this->buffer = new char[BUFFER_SIZE];
 
     // Create all buffers
     cl_int status;
- 	cl_mem d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
+ 	d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
     if (status != CL_SUCCESS) {
         cout << "Error in clCreateBuffer: " << status << endl;
     }
-    cl_mem d_stack = clCreateBuffer(context, CL_MEM_READ_WRITE, stackSize * sizeof(int), NULL, &status);
-    cl_mem d_data = clCreateBuffer(context, CL_MEM_READ_WRITE, dataSize * sizeof(int), NULL, &status);
-    cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
+    d_stack = clCreateBuffer(context, CL_MEM_READ_WRITE, stackSize * sizeof(int), NULL, &status);
+    d_data = clCreateBuffer(context, CL_MEM_READ_WRITE, dataSize * sizeof(int), NULL, &status);
+    d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
+}
+
+void OCLVM::runInterpreter() {
+
+    if (!buffersCreated) {
+        createBuffers();
+        buffersCreated = true;
+    }
+
     
     // Copy code from HOST->DEVICE
-    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
+    cl_int status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
     status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
     if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
