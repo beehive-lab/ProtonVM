@@ -43,7 +43,6 @@ class AbstractVM {
         }
 
         void initHeap() {
-            cout << "HEAP: " << endl;
             for (auto i = 0; i < data.size(); i++) {
                 data[i] = i;
             }

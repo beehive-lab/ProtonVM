@@ -29,6 +29,8 @@ class OCLVM : public AbstractVM {
 
         void setPlatform(int numPlatform);
 
+        long getKernelTime();
+
         // Implementation of the Interpreter in 
         // OpenCL C
         void runInterpreter();
@@ -37,6 +39,7 @@ class OCLVM : public AbstractVM {
 
         char* readSource(const char* sourceFilename);
         int readBinaryFile(unsigned char **output, size_t *size, const char *name);
+        long getTime(cl_event event);
 
         string platformName;
         cl_uint numPlatforms;

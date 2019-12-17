@@ -29,6 +29,8 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "chrono": "cpp",
+        "deque": "cpp"
     }
 }

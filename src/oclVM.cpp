@@ -46,6 +46,20 @@ int OCLVM::readBinaryFile(unsigned char **output, size_t *size, const char *name
     return 0;
 }
 
+long OCLVM::getTime(cl_event event) {
+    clWaitForEvents(1, &event);
+    cl_ulong time_start, time_end;
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(time_start), &time_start, NULL);
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
+    return (time_end - time_start);
+}
+
+long OCLVM::getKernelTime() {
+    if (kernelEvent != nullptr) {
+        return OCLVM::getTime(kernelEvent);
+    }
+    return 0;
+}
 
 int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
     cl_int status;	
@@ -124,7 +138,6 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
             cout << "Error in clCreateKernel (interpreter). Code error: " << status << endl;
             abort();
         }
-
     } else { 
 	    const char *sourceFile = kernelFilename.c_str();
 	    source = readSource(sourceFile);
