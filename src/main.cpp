@@ -69,7 +69,6 @@ void testFunction() {
         PRINT,			// 11
         HALT			// 12
     };
-    Instruction* ins = createAllInstructions();
     VM vm(functionCall,  6); // Start address is 6
     vm.setVMConfig(100, 100);
     vm.setTrace();
@@ -97,7 +96,6 @@ void testVectorAddition() {
             POP,
             HALT
     };
-    Instruction* ins = createAllInstructions();
     VM vm(vectorAdd,  0); 
     vm.setVMConfig(100, 100);
     vm.setTrace();
@@ -105,6 +103,57 @@ void testVectorAddition() {
     vm.runInterpreter();
     vm.printHeap();
     cout << endl;
+}
+
+void testVectorAdditionOpenCL() {
+    // Vector addition in a LOOP
+    vector<int> vectorAdd = {
+            ICONST, 0,
+            DUP,
+            ICONST, 10,
+            IEQ,
+            BRT, 23,
+            DUP,    // offset for each array to load
+            DUP,    // offset for each array to load
+            GLOAD_INDEXED, 10,
+            LOAD, 1,   // load from position 1
+            GLOAD_INDEXED, 20,
+            IADD,
+            GSTORE_INDEXED, 0,
+            ICONST1,
+            IADD,
+            BR, 2,
+            POP,
+            HALT
+    };
+    OCLVM oclVM(vectorAdd, 0);
+    oclVM.setVMConfig(100, 100);
+    oclVM.setTrace();
+    oclVM.setPlatform(0);
+    oclVM.initHeap();
+    oclVM.initOpenCL("src/interpreter.cl", false);
+    oclVM.runInterpreter();
+    oclVM.printHeap();
+    cout << endl;
+}
+
+void testOpenCLInterpreter() {
+    vector<int> hello = {
+        ICONST, 128,
+        ICONST, 1,
+        IADD,
+        GSTORE, 0,
+        GLOAD, 0,
+        PRINT,
+        HALT
+    };
+    // OpenCL Interpreter
+    OCLVM oclVM(hello, 0);
+    oclVM.setVMConfig(100, 100);
+    oclVM.setPlatform(0);
+    oclVM.setTrace();
+    oclVM.initOpenCL("src/interpreter.cl", false);
+    oclVM.runInterpreter();
 }
 
 int main(int argc, char** argv) {
@@ -118,22 +167,9 @@ int main(int argc, char** argv) {
     testFunction();
     std::cout << "----" << endl;
     testVectorAddition();
-    
-    vector<int> hello = {
-        ICONST, 128,
-        ICONST, 1,
-        IADD,
-        GSTORE, 0,
-        GLOAD, 0,
-        PRINT,
-        HALT
-    };
+
     // OpenCL Interpreter
-    OCLVM oclVM(hello, 0);
-    oclVM.setVMConfig(100, 100);
-    oclVM.setTrace();
-    oclVM.initOpenCL("src/interpreter.cl", false);
-    oclVM.runInterpreter();
+    testOpenCLInterpreter();
 
     return 0;
 }

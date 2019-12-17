@@ -1,15 +1,6 @@
 
 #include "bytecodes.hpp"
 
-int printTrace(int opcode, __global char* buffer, int bufferIndex) {
-    char valueString[] = {'<', 'O', 'P', '>', ' ', '=', ' '};
-    for (int i = 0; i < 7; i++) {
-        buffer[bufferIndex++] = valueString[i];
-    }
-    bufferIndex = numberToChar(opcode, buffer, bufferIndex);
-    return bufferIndex;
-}
-
 /*
  * Transform int to char on the target device.
  */
@@ -29,6 +20,15 @@ int numberToChar(int number, __global char* buffer, int bufferIndex) {
         buffer[bufferIndex++] = '0' + value;
     }
     buffer[bufferIndex++] = '\n';
+    return bufferIndex;
+}
+
+int printTrace(int opcode, __global char* buffer, int bufferIndex) {
+    char valueString[] = {'<', 'O', 'P', '>', ' ', '=', ' '};
+    for (int i = 0; i < 7; i++) {
+        buffer[bufferIndex++] = valueString[i];
+    }
+    bufferIndex = numberToChar(opcode, buffer, bufferIndex);
     return bufferIndex;
 }
 
@@ -58,7 +58,7 @@ __kernel void interpreter(__global int* code,
         }
 
         ip++;
-        int a, b, c, address, value, numArgs;
+        int a, b, c, address, value, numArgs, offset;
         bool doHalt = false;
 
         switch (opcode) {
@@ -152,6 +152,18 @@ __kernel void interpreter(__global int* code,
                 value = stack[sp--];
                 address = code[ip++];
                 data[address] = value;
+                break;
+            case GLOAD_INDEXED:
+                address = code[ip++];
+                offset = stack[sp--];
+                value = data[(address + offset)];
+                stack[++sp] = value;
+                break;
+            case GSTORE_INDEXED:
+                value = stack[sp--];
+                offset = stack[sp--];
+                address = code[ip++];
+                data[(address + offset)] = value;
                 break;
             case PRINT:
                 value = stack[sp--];

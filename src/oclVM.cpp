@@ -158,6 +158,7 @@ void OCLVM::runInterpreter() {
     
     // Copy code from HOST->DEVICE
     status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
     if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueWriteBuffer" << endl;
     }
@@ -187,6 +188,10 @@ void OCLVM::runInterpreter() {
 
     // Obtain buffer
     status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char)*100000, buffer, 0, NULL, &readEvent);
+    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent2);
+     if (status != CL_SUCCESS) {
+        cout << "Error in clEnqueueReadBuffer" << endl;
+    }
 
     cout << "Program finished: " << endl;
     cout << "Result: " << buffer;

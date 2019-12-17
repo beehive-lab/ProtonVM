@@ -51,8 +51,10 @@ class OCLVM : public AbstractVM {
         size_t lWorkSize;
 
         cl_event writeEvent;
+        cl_event writeEvent2;
         cl_event kernelEvent;
         cl_event readEvent;
+        cl_event readEvent2;
 
         int platformNumber = 0;
 
