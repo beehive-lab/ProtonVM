@@ -28,7 +28,7 @@ void VM::runInterpreter() {
             printTrace(opcode);       
         }
         ip++;
-        int a, b, c, address, value, numArgs;
+        int a, b, c, address, offset, value, numArgs;
         bool doHalt = false;
 
         switch (opcode) {
@@ -40,7 +40,8 @@ void VM::runInterpreter() {
             case IADD:
                 a = stack[sp--];
                 b = stack[sp--];
-                stack[++sp] = a + b;
+                value = a + b;
+                stack[++sp] = value;
                 break;
             case ISUB:
                 a = stack[sp--];
@@ -97,8 +98,8 @@ void VM::runInterpreter() {
                 break;
             case ICONST:
                 // load constant into the stack
-                c = code[ip++];
-                stack[++sp] = c;
+                value = code[ip++];
+                stack[++sp] = value;
                 break;
             case ICONST1:
                 stack[++sp] = 1;
@@ -122,6 +123,22 @@ void VM::runInterpreter() {
                 value = stack[sp--];
                 address = code[ip++];
                 data[address] = value;
+                break;
+            case GLOAD_INDEXED:
+                // GLOAD_INDEXED 30 and offset from the stack
+                address = code[ip++];
+                offset = stack[sp--];
+                value = data[(address + offset)];
+                stack[++sp] = value;
+                break;
+            case GSTORE_INDEXED:
+                // GSTORE_INDEXED 30
+                // value on top of the stack
+                // offset, second in the stack
+                value = stack[sp--];
+                offset = stack[sp--];
+                address = code[ip++];
+                data[(address + offset)] = value;
                 break;
             case PRINT:
                 value = stack[sp--];

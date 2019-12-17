@@ -48,7 +48,8 @@ Instruction* createAllInstructions() {
     i[21] = createInstruction("LSHITF");
     i[22] = createInstruction("RSHIFT");
     i[23] = createInstruction("ICONST1");
-
+    i[24] = createInstruction("GLOAD_INDEXED");
+    i[25] = createInstruction("GSTORE_INDEXED");
     return i;
 } 
 

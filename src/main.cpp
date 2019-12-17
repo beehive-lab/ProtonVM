@@ -76,6 +76,37 @@ void testFunction() {
     vm.runInterpreter();
 }
 
+void testVectorAddition() {
+    // Vector addition in a LOOP
+    vector<int> vectorAdd = {
+            ICONST, 0,
+            DUP,
+            ICONST, 10,
+            IEQ,
+            BRT, 23,
+            DUP,    // offset for each array to load
+            DUP,    // offset for each array to load
+            GLOAD_INDEXED, 10,
+            LOAD, 1,   // load from position 1
+            GLOAD_INDEXED, 20,
+            IADD,
+            GSTORE_INDEXED, 0,
+            ICONST1,
+            IADD,
+            BR, 2,
+            POP,
+            HALT
+    };
+    Instruction* ins = createAllInstructions();
+    VM vm(vectorAdd,  0); 
+    vm.setVMConfig(100, 100);
+    vm.setTrace();
+    vm.initHeap();
+    vm.runInterpreter();
+    vm.printHeap();
+    cout << endl;
+}
+
 int main(int argc, char** argv) {
     std::cout << "----" << endl;
     testHello();
@@ -85,6 +116,8 @@ int main(int argc, char** argv) {
     testProgram2();
     std::cout << "----" << endl;
     testFunction();
+    std::cout << "----" << endl;
+    testVectorAddition();
     
     vector<int> hello = {
         ICONST, 128,

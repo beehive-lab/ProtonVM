@@ -33,7 +33,27 @@ class AbstractVM {
             } else if (instruction.numOperarands == 2) {
                 cout << code[ip + 1] << " " << code[ip + 2];
             }
-            cout << endl;
+
+            cout << "\t[";
+            for (auto i = 0; i <= sp; i++) {
+                cout << stack[i] << ' ';
+            }
+            
+            cout << "]" << endl;
+        }
+
+        void initHeap() {
+            cout << "HEAP: " << endl;
+            for (auto i = 0; i < data.size(); i++) {
+                data[i] = i;
+            }
+        }
+
+        void printHeap() {
+            cout << "HEAP: " << endl;
+            for (auto i = data.begin(); i != data.end(); i++) {
+                std::cout << *i << ' ';
+            }
         }
 
         virtual void runInterpreter() = 0;
@@ -47,9 +67,9 @@ class AbstractVM {
         int stackSize;
         int dataSize;
 
-        int ip;
+        int ip = 0;
         int sp = -1;
-        int fp;
+        int fp = 0;
 
         bool trace = false;
 

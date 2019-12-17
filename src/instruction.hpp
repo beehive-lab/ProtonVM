@@ -3,7 +3,7 @@
 
 #include <string>
 
-#define TOTAL_INSTRUCTIONS 24
+#define TOTAL_INSTRUCTIONS 26
 
 struct Instruction {
     std::string name;
