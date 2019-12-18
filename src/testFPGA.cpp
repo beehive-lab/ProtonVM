@@ -11,7 +11,7 @@ using namespace std;
 #include "oclVM.hpp"
 #include "stats.hpp"
 
-#define SIZE 1000
+int SIZE = 1024;
 
 void runBenchmarkCplus() {
     // Vector addition in a LOOP
@@ -76,6 +76,7 @@ void runBenchmarkOpenCL() {
 
     vector<long> totalTime;
 
+    // Run Global
     OCLVM oclVM(vectorAdd, 0);
     oclVM.setVMConfig(100, SIZE * 3);
     oclVM.setPlatform(1);
@@ -84,12 +85,45 @@ void runBenchmarkOpenCL() {
         oclVM.initHeap();
         oclVM.runInterpreter();
         long kernelTime = oclVM.getKernelTime();
-        cout << "Kernel Time: " << kernelTime << endl;
         totalTime.push_back(kernelTime);
     }
 
     double medianTotalTime = median(totalTime);
-    cout << "Median OpenCLTimer: " << medianTotalTime << endl;
+    cout << "MedianGlobal OpenCLTimer: " << medianTotalTime << endl;
+
+    totalTime.clear();
+
+    // Run Local
+    OCLVMLocal oclVMLocal(vectorAdd, 0);
+    oclVMLocal.setVMConfig(100, SIZE * 3);
+    oclVMLocal.setPlatform(1);
+    oclVMLocal.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
+    for (int i = 0; i < 11; i++) {    
+        oclVMLocal.initHeap();
+        oclVMLocal.runInterpreter();
+        long kernelTime = oclVMLocal.getKernelTime();
+        totalTime.push_back(kernelTime);
+    }
+
+    medianTotalTime = median(totalTime);
+    cout << "MedianLocal OpenCLTimer: " << medianTotalTime << endl;
+
+
+    totalTime.clear();
+    // Run Private
+    OCLVMPrivate oclVMPrivate(vectorAdd, 0);
+    oclVMPrivate.setVMConfig(100, SIZE * 3);
+    oclVMPrivate.setPlatform(1);
+    oclVMPrivate.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
+    for (int i = 0; i < 11; i++) {    
+        oclVMPrivate.initHeap();
+        oclVMPrivate.runInterpreter();
+        long kernelTime = oclVMPrivate.getKernelTime();
+        totalTime.push_back(kernelTime);
+    }
+
+    medianTotalTime = median(totalTime);
+    cout << "MedianPrivate OpenCLTimer: " << medianTotalTime << endl;
 }
 
 void runBenchmarks() {
@@ -119,6 +153,10 @@ void runHello() {
 }
 
 int main(int argc, char** argv) {
+    if (argc > 1) {
+        SIZE = atoi(argv[1]);
+    }
+    cout << "Size: " << SIZE << endl;
     runBenchmarks();
     return 0;
 }

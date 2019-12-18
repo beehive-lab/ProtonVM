@@ -21,6 +21,19 @@ OCLVM::~OCLVM() {
     if (vmAllocated) {
         this->stack.clear();
         this->data.clear();
+
+        // Release OpenCL objects
+        clReleaseKernel(kernel1);
+        clReleaseProgram(program);  
+        clReleaseCommandQueue(commandQueue);
+        clReleaseMemObject(d_buffer);
+        clReleaseMemObject(d_code);
+        clReleaseMemObject(d_stack);
+        clReleaseMemObject(d_data);
+        clReleaseContext(context);
+        free(source);
+        free(platforms);
+        free(devices);
     }
 }
 
