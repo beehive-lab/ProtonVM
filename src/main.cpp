@@ -299,7 +299,7 @@ void runOpenCLParallelIntepreter() {
 
 void runOpenCLParallelIntepreterLoop() {
     int size = 1024;
-    int groupSize = 256;
+    int groupSize = 16;
     vector<int> vectorAdd = {
         THREAD_ID,
         DUP,
