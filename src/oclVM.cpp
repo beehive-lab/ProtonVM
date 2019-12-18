@@ -407,13 +407,13 @@ void OCLVMParallel::runInterpreter(size_t range) {
 	}
 
     // Launch Kernel
-    size_t globalWorkSize[] = {range};
-    size_t localWorkSize[] = {1};
+    size_t globalWorkSize[] = {range, 1, 1};
+    size_t localWorkSize[] = {1, 1, 1};
     status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, localWorkSize, 0, NULL, &kernelEvent);
     if (status != CL_SUCCESS) {
 		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
 	}
-
+    
     // Obtain buffer and heap
     status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
     status |= clEnqueueReadBuffer(commandQueue, d_data1, CL_TRUE, 0,  sizeof(int) * data1.size(), data1.data(), 0, NULL, &readEvent[1]);

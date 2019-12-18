@@ -126,9 +126,37 @@ void runBenchmarkOpenCL() {
     cout << "MedianPrivate OpenCLTimer: " << medianTotalTime << endl;
 }
 
+void runOpenCLParallelIntepreter() {
+    vector<int> vectorAdd = {
+            THREAD_ID,
+            DUP,
+            PARALLEL_GLOAD_INDEXED, 0,          
+            THREAD_ID,  
+            PARALLEL_GLOAD_INDEXED, 1,        
+            IMUL,
+            PARALLEL_GSTORE_INDEXED, 2,
+            HALT
+    };
+    
+    vector<long> totalTime;
+    OCLVMParallel oclVM(vectorAdd, 0);
+    oclVM.setVMConfig(100, SIZE);
+    oclVM.setHeapSizes(SIZE);
+    oclVM.setPlatform(1);
+    oclVM.initOpenCL("src/buildParallel/interpreterParallel.xclbin", false);
+    for (int i = 0; i < 11; i++) {    
+        oclVM.initHeap();
+        oclVM.runInterpreter(SIZE);
+        long kernelTime = oclVM.getKernelTime();
+        totalTime.push_back(kernelTime);
+    }
+    double medianTotalTime = median(totalTime);
+    cout << "MedianGlobal OpenCLTimer: " << medianTotalTime << endl;
+}
+
 void runBenchmarks() {
     runBenchmarkCplus();
-    runBenchmarkOpenCL();
+    //runBenchmarkOpenCL();
 }
 
 void runHello() {
