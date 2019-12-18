@@ -151,11 +151,12 @@ void runOpenCLParallelIntepreter() {
         totalTime.push_back(kernelTime);
     }
     double medianTotalTime = median(totalTime);
-    cout << "MedianGlobal OpenCLTimer: " << medianTotalTime << endl;
+    cout << "MedianParallel OpenCLTimer: " << medianTotalTime << endl;
 }
 
 void runBenchmarks() {
     runBenchmarkCplus();
+    runOpenCLParallelIntepreter();
     //runBenchmarkOpenCL();
 }
 

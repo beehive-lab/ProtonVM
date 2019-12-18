@@ -9,7 +9,7 @@
         {
             "label": "run",
             "type": "shell",
-            "command": "./main",
+            "command": "./bin/main",
             "args": [
                 " "
             ],
