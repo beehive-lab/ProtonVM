@@ -36,37 +36,6 @@
 #define TRUE    1
 #define FALSE   0
 
-/*
- * Transform int to char on the target device.
- */
-int numberToChar(int number, __global char* buffer, int bufferIndex) {
-    int n = number;
-    int digits[10];
-    int counter = 0;
-    while (n > 0) {
-        int value = n % 10;
-        n = n / 10; 
-        digits[counter++] = value;
-    }
-
-    int i = counter;
-    for (; i >= 0; i--) {
-        int value = digits[i];
-        buffer[bufferIndex++] = '0' + value;
-    }
-    buffer[bufferIndex++] = '\n';
-    return bufferIndex;
-}
-
-int printTrace(int opcode, __global char* buffer, int bufferIndex) {
-    char valueString[] = {'<', 'O', 'P', '>', ' ', '=', ' '};
-    for (int i = 0; i < 7; i++) {
-        buffer[bufferIndex++] = valueString[i];
-    }
-    bufferIndex = numberToChar(opcode, buffer, bufferIndex);
-    return bufferIndex;
-}
-
 /**
  * OpenCL code for the bytecode interpreter.
  * Multi-heap
@@ -84,26 +53,24 @@ __kernel void interpreter(__constant int* code,
 {
 
     int idx = get_global_id(0);
-    char valueString[] = {'[', 'V', 'M', ']', ' ', '=', ' '};
-    int bufferIndex = 0;
 
     // Stack can be private
     __local int stack[100];
-    __local int privateHeap1[1024];
-    __local int privateHeap2[1024];
-    __local int privateHeap3[1024];
+    __local int privateHeap1[128];
+    __local int privateHeap2[128];
+    __local int privateHeap3[128];
 
-    privateHeap1[idx] = data1[idx];
-    privateHeap2[idx] = data2[idx];
-    privateHeap3[idx] = data3[idx];
-    
+    int lid = get_local_id(0);
+
+    privateHeap1[lid] = data1[idx];
+    privateHeap2[lid] = data2[idx];
+    privateHeap3[lid] = data3[idx];
+
+    // Wait for all threads within the workwroup
+    barrier(CLK_LOCAL_MEM_FENCE);
 
     while (ip < codeSize) {
         int opcode = code[ip];
-
-        if (trace == 1) {
-            bufferIndex = printTrace(opcode, buffer, bufferIndex);       
-        }
 
         ip++;
         int a, b, c, address, value, numArgs, offset, heapNumber;
@@ -247,10 +214,6 @@ __kernel void interpreter(__constant int* code,
                 break;
             case PRINT:
                 value = stack[sp--];
-                for (int i = 0; i < 7; i++) {
-                    buffer[bufferIndex++] = valueString[i];
-                }
-                bufferIndex = numberToChar(value, buffer, bufferIndex);
                 break;
             case CALL:
                 address = code[ip++];
@@ -271,8 +234,8 @@ __kernel void interpreter(__constant int* code,
                 stack[++sp] = value;  // return value on top of the stack
                 break;
             case THREAD_ID:
-                // Put on top of the stack the get_global_id
-                value = idx;
+                // Put on top of the stack the get_local_id(0)
+                value = lid;
                 stack[++sp] = value;
                 break;
             case POP:
@@ -291,7 +254,7 @@ __kernel void interpreter(__constant int* code,
     }
 
     // Copy to global memory
-    data1[idx] = privateHeap1[idx];
-    data2[idx] = privateHeap2[idx];
-    data3[idx] = privateHeap3[idx];
+    data1[idx] = privateHeap1[lid];
+    data2[idx] = privateHeap2[lid];
+    data3[idx] = privateHeap3[lid];
 }

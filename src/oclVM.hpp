@@ -105,10 +105,17 @@ class OCLVMParallel : public OCLVM {
         void setHeapSizes(int dataSize);
         void initHeap();
 
-    private: 
+    protected: 
         vector<int> data1;
         vector<int> data2;
         vector<int> data3;
+};
+
+class OCLVMParallelLoop : public OCLVMParallel {
+    public:
+        OCLVMParallelLoop() {};
+        OCLVMParallelLoop(vector<int> code, int mainByteCodeIndex);
+        void runInterpreter(size_t range, size_t range2);
 
 };
 

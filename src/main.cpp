@@ -297,6 +297,38 @@ void runOpenCLParallelIntepreter() {
 }
 
 
+void runOpenCLParallelIntepreterLoop() {
+    int size = 256;
+    int groupSize = 16;
+    vector<int> vectorAdd = {
+        THREAD_ID,
+        DUP,
+        ICONST, groupSize,
+        IEQ,
+        BRT, 23,
+        DUP,    // offset for each array to load
+        DUP,    // offset for each array to load
+        PARALLEL_GLOAD_INDEXED, 0,
+        LOAD, 1,   // load index from position 1
+        PARALLEL_GLOAD_INDEXED, 1,
+        IMUL,
+        PARALLEL_GSTORE_INDEXED, 2,
+        ICONST1,
+        IADD,
+        BR, 1,
+        POP,
+        HALT
+    };
+    OCLVMParallelLoop oclVM(vectorAdd, 0);
+    oclVM.setVMConfig(100, size);
+    oclVM.setHeapSizes(size);
+    oclVM.setPlatform(0);
+    oclVM.initOpenCL("src/interpreterParallelLoop.cl", false);
+    oclVM.initHeap();
+    oclVM.runInterpreter(size, 16);
+}
+
+
 void runTests() {
     std::cout << "----" << endl;
     testHello();
@@ -320,5 +352,6 @@ void runBenchmarks() {
 
 int main(int argc, char** argv) {
     runOpenCLParallelIntepreter();
+    runOpenCLParallelIntepreterLoop();
     return 0;
 }
