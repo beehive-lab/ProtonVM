@@ -68,7 +68,7 @@ void runOpenCLParallelIntepreter() {
     OCLVMParallel oclVM(vectorAdd, 0);
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
-    oclVM.setPlatform(1);
+    oclVM.setPlatform(0);
     oclVM.initOpenCL("src/interpreterParallel.cl", false);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
