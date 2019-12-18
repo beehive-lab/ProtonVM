@@ -26,6 +26,24 @@ function compilePrivateInterpreter {
     cd -
 }
 
+function compileParallelInterpreter {
+    mkdir -p buildParallel
+    cd buildParallel
+    xocc -c -s -o interpreterParallel.xo -t hw --platform $PLATFORM ../interpreterParallel.cl
+    xocc -l -s -O3 -j12 -o mykerinterpreternelParallel.xclbin -t hw --platform $PLATFORM interpreterParallel.xo
+    cd -
+}
+
+function compileParallelLoopInterpreter {
+    mkdir -p buildParallelLoop
+    cd buildParallelLoop
+    xocc -c -s -o interpreterParallelLoop.xo -t hw --platform $PLATFORM ../interpreterParallelLoop.cl
+    xocc -l -s -O3 -j12 -o mykerinterpreternelParallelLoop.xclbin -t hw --platform $PLATFORM interpreterParallelLoop.xo
+    cd -
+}
+
+
 compileGlobalInterpreter
 compileLocalInterpreter
 compilePrivateInterpreter
+compileParallelInterpreter

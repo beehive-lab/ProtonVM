@@ -123,7 +123,7 @@ void runOpenCLParallelIntepreterLoop() {
 
 void runBenchmarks() {
     runBenchmarkCplus();
-    runOpenCLParallelIntepreter();
+    runOpenCLParallelIntepreterLoop();
 }
 
 void runHello() {
