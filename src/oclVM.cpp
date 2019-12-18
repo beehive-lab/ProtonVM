@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define DEBUG 0
+
 OCLVM::OCLVM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
@@ -479,8 +481,15 @@ void OCLVMParallelLoop::runInterpreter(size_t range1, size_t range2) {
     status |= clEnqueueReadBuffer(commandQueue, d_data1, CL_TRUE, 0,  sizeof(int) * data1.size(), data1.data(), 0, NULL, &readEvent[1]);
     status |= clEnqueueReadBuffer(commandQueue, d_data2, CL_TRUE, 0,  sizeof(int) * data2.size(), data2.data(), 0, NULL, &readEvent[2]);
     status |= clEnqueueReadBuffer(commandQueue, d_data3, CL_TRUE, 0,  sizeof(int) * data3.size(), data3.data(), 0, NULL, &readEvent[3]);
-     if (status != CL_SUCCESS) {
+    if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
+    }
+
+    if (DEBUG) {
+        for (auto i = 0; i < data3.size(); i++) {
+            cout << data3[i]  << " ";
+        }
+        cout << "\n";
     }
 }
 
