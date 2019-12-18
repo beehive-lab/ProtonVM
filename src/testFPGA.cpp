@@ -143,7 +143,7 @@ void runOpenCLParallelIntepreter() {
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(1);
-    oclVM.initOpenCL("src/buildParallel/interpreterParallel.xclbin", false);
+    oclVM.initOpenCL("src/buildParallel/mykerinterpreternelParallel.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter(SIZE);
