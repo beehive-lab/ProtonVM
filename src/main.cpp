@@ -298,8 +298,8 @@ void runOpenCLParallelIntepreter() {
 
 
 void runOpenCLParallelIntepreterLoop() {
-    int size = 256;
-    int groupSize = 16;
+    int size = 1024;
+    int groupSize = 256;
     vector<int> vectorAdd = {
         THREAD_ID,
         DUP,
@@ -325,7 +325,7 @@ void runOpenCLParallelIntepreterLoop() {
     oclVM.setPlatform(0);
     oclVM.initOpenCL("src/interpreterParallelLoop.cl", false);
     oclVM.initHeap();
-    oclVM.runInterpreter(size, 16);
+    oclVM.runInterpreter(size, groupSize);
 }
 
 

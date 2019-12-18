@@ -56,9 +56,9 @@ __kernel void interpreter(__constant int* code,
 
     // Stack can be private
     __local int stack[100];
-    __local int privateHeap1[128];
-    __local int privateHeap2[128];
-    __local int privateHeap3[128];
+    __local int privateHeap1[256];
+    __local int privateHeap2[256];
+    __local int privateHeap3[256];
 
     int lid = get_local_id(0);
 
