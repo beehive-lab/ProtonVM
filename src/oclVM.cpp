@@ -355,7 +355,6 @@ void OCLVMParallel::setHeapSizes(int dataSize) {
 }
 
 void OCLVMParallel::initHeap() {
-    cout << "Init HEAPS\n"; 
     for (auto i = 0; i < data1.size(); i++) {
         data1[i] = i;
     }
@@ -368,8 +367,6 @@ void OCLVMParallel::initHeap() {
 }
 
 void OCLVMParallel::runInterpreter(size_t range) {
-
-    cout << "Running Parallel" << endl;
 
     this->buffer = new char[BUFFER_SIZE];
 
@@ -413,7 +410,7 @@ void OCLVMParallel::runInterpreter(size_t range) {
     if (status != CL_SUCCESS) {
 		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
 	}
-    
+
     // Obtain buffer and heap
     status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
     status |= clEnqueueReadBuffer(commandQueue, d_data1, CL_TRUE, 0,  sizeof(int) * data1.size(), data1.data(), 0, NULL, &readEvent[1]);
@@ -424,11 +421,6 @@ void OCLVMParallel::runInterpreter(size_t range) {
     }
 
     cout << "Program finished: " << endl;
-    for (auto i = 0; i < data3.size(); i++) {
-        cout << data3[i] << " ";
-    }
-    cout << "\n";
-    //cout << "Result: " << buffer;
 }
 
 
