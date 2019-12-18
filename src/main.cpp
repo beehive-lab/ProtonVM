@@ -199,7 +199,7 @@ void testOpenCLInterpreterPrivate() {
 }
 
 void runBenchmarkCplus() {
-    // Vector addition in a LOOP
+    // Vector multiplcation in a LOOP
     vector<int> vectorAdd = {
             ICONST, 0,
             DUP,
@@ -214,7 +214,7 @@ void runBenchmarkCplus() {
             IADD,
             GSTORE_INDEXED, 0,
             ICONST1,
-            IADD,
+            IMUL,
             BR, 2,
             POP,
             HALT
