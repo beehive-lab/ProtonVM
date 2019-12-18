@@ -23,17 +23,17 @@ OCLVM::~OCLVM() {
         this->data.clear();
 
         // Release OpenCL objects
-        clReleaseKernel(kernel1);
-        clReleaseProgram(program);  
-        clReleaseCommandQueue(commandQueue);
-        clReleaseMemObject(d_buffer);
-        clReleaseMemObject(d_code);
-        clReleaseMemObject(d_stack);
-        clReleaseMemObject(d_data);
-        clReleaseContext(context);
-        free(source);
-        free(platforms);
-        free(devices);
+        // clReleaseKernel(kernel1);
+        // clReleaseProgram(program);  
+        // clReleaseCommandQueue(commandQueue);
+        // clReleaseMemObject(d_buffer);
+        // clReleaseMemObject(d_code);
+        // clReleaseMemObject(d_stack);
+        // clReleaseMemObject(d_data);
+        // clReleaseContext(context);
+        // free(source);
+        // free(platforms);
+        // free(devices);
     }
 }
 
@@ -175,8 +175,8 @@ void OCLVM::runInterpreter() {
 
     
     // Copy code from HOST->DEVICE
-    cl_int status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
-    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
+    cl_int status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent[0]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent[1]);
     if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
     }
@@ -205,14 +205,13 @@ void OCLVM::runInterpreter() {
 	}
 
     // Obtain buffer and heap
-    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent);
-    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent2);
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent[1]);
      if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
 
     cout << "Program finished: " << endl;
-    cout << "Result: " << buffer;
 }
 
 OCLVMLocal::OCLVMLocal(vector<int> code, int mainByteCodeIndex) {
@@ -239,8 +238,8 @@ void OCLVMLocal::runInterpreter() {
     cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
     
     // Copy code from HOST->DEVICE
-    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
-    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
+    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent[0]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent[1]);
     if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
     }
@@ -269,8 +268,8 @@ void OCLVMLocal::runInterpreter() {
 	}
 
     // Obtain buffer and heap
-    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent);
-    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent2);
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent[1]);
      if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
@@ -303,8 +302,8 @@ void OCLVMPrivate::runInterpreter() {
     cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
     
     // Copy code from HOST->DEVICE
-    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent);
-    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent2);
+    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent[0]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent[1]);
     if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
     }
@@ -332,14 +331,104 @@ void OCLVMPrivate::runInterpreter() {
 	}
 
     // Obtain buffer and heap
-    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent);
-    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent2);
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent[1]);
      if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
 
     cout << "Program finished: " << endl;
     cout << "Result: " << buffer;
+}
+
+OCLVMParallel::OCLVMParallel(vector<int> code, int mainByteCodeIndex) {
+    this->code = code;
+    this->codeSize = code.size();
+    this->ip = mainByteCodeIndex;
+    this->ins = createAllInstructions();
+}
+
+void OCLVMParallel::setHeapSizes(int dataSize) {
+    this->data1.resize(dataSize);
+    this->data2.resize(dataSize);
+    this->data3.resize(dataSize);
+}
+
+void OCLVMParallel::initHeap() {
+    cout << "Init HEAPS\n"; 
+    for (auto i = 0; i < data1.size(); i++) {
+        data1[i] = i;
+    }
+    for (auto i = 0; i < data2.size(); i++) {
+        data2[i] = i;
+    }
+    for (auto i = 0; i < data3.size(); i++) {
+        data3[i] = 1;
+    }
+}
+
+void OCLVMParallel::runInterpreter(size_t range) {
+
+    cout << "Running Parallel" << endl;
+
+    this->buffer = new char[BUFFER_SIZE];
+
+    // Create all buffers
+    cl_int status;
+ 	cl_mem d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
+    cl_mem d_data1 = clCreateBuffer(context, CL_MEM_READ_WRITE, data1.size() * sizeof(int), NULL, &status);
+    cl_mem d_data2 = clCreateBuffer(context, CL_MEM_READ_WRITE, data2.size() * sizeof(int), NULL, &status);
+    cl_mem d_data3 = clCreateBuffer(context, CL_MEM_READ_WRITE, data3.size() * sizeof(int), NULL, &status);
+    cl_mem d_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, BUFFER_SIZE * sizeof(char), NULL, &status);
+    
+    // Copy code from HOST->DEVICE
+    status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent[0]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data1, CL_TRUE, 0, dataSize * sizeof(int), data1.data(), 0, NULL, &writeEvent[1]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data2, CL_TRUE, 0, dataSize * sizeof(int), data2.data(), 0, NULL, &writeEvent[2]);
+    status |= clEnqueueWriteBuffer(commandQueue, d_data3, CL_TRUE, 0, dataSize * sizeof(int), data3.data(), 0, NULL, &writeEvent[3]);
+    if (status != CL_SUCCESS) {
+        cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
+    }
+    
+    int t = (trace)? 1: 0;
+    // Push Arguments
+	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
+    status |= clSetKernelArg(kernel1, 1, sizeof(cl_mem), &d_data1);
+    status |= clSetKernelArg(kernel1, 2, sizeof(cl_mem), &d_data2);
+    status |= clSetKernelArg(kernel1, 3, sizeof(cl_mem), &d_data3);
+    status |= clSetKernelArg(kernel1, 4, sizeof(cl_mem), &d_buffer);
+	status |= clSetKernelArg(kernel1, 5, sizeof(cl_int), &codeSize);
+    status |= clSetKernelArg(kernel1, 6, sizeof(cl_int), &ip);
+    status |= clSetKernelArg(kernel1, 7, sizeof(cl_int), &fp);
+    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &sp);
+    status |= clSetKernelArg(kernel1, 9, sizeof(cl_int), &t);
+    if (status != CL_SUCCESS) {
+		cout << "Error in clSetKernelArgs. Error code = " << status  << endl;
+	}
+
+    // Launch Kernel
+    size_t globalWorkSize[] = {range};
+    size_t localWorkSize[] = {1};
+    status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, localWorkSize, 0, NULL, &kernelEvent);
+    if (status != CL_SUCCESS) {
+		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
+	}
+
+    // Obtain buffer and heap
+    status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data1, CL_TRUE, 0,  sizeof(int) * data1.size(), data1.data(), 0, NULL, &readEvent[1]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data2, CL_TRUE, 0,  sizeof(int) * data2.size(), data2.data(), 0, NULL, &readEvent[2]);
+    status |= clEnqueueReadBuffer(commandQueue, d_data3, CL_TRUE, 0,  sizeof(int) * data3.size(), data3.data(), 0, NULL, &readEvent[3]);
+     if (status != CL_SUCCESS) {
+        cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
+    }
+
+    cout << "Program finished: " << endl;
+    for (auto i = 0; i < data3.size(); i++) {
+        cout << data3[i] << " ";
+    }
+    cout << "\n";
+    //cout << "Result: " << buffer;
 }
 
 

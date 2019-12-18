@@ -28,6 +28,10 @@
 #define GLOAD_INDEXED  24  // top_stack <- global[top-stack]
 #define GSTORE_INDEXED 25
 
+#define THREAD_ID 26
+#define PARALLEL_GLOAD_INDEXED 27
+#define PARALLEL_GSTORE_INDEXED 28
+
 #define TRUE    1
 #define FALSE   0
 

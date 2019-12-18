@@ -60,11 +60,9 @@ class OCLVM : public AbstractVM {
         size_t localWorkSize[1];
         size_t lWorkSize;
 
-        cl_event writeEvent;
-        cl_event writeEvent2;
+        cl_event writeEvent[5];
         cl_event kernelEvent;
-        cl_event readEvent;
-        cl_event readEvent2;
+        cl_event readEvent[5];
 
         int platformNumber = 0;
 
@@ -96,6 +94,21 @@ class OCLVMPrivate : public OCLVM {
         OCLVMPrivate() {};
         OCLVMPrivate(vector<int> code, int mainByteCodeIndex);
         void runInterpreter();
+
+};
+
+class OCLVMParallel : public OCLVM {
+    public:
+        OCLVMParallel() {};
+        OCLVMParallel(vector<int> code, int mainByteCodeIndex);
+        void runInterpreter(size_t range);
+        void setHeapSizes(int dataSize);
+        void initHeap();
+
+    private: 
+        vector<int> data1;
+        vector<int> data2;
+        vector<int> data3;
 
 };
 
