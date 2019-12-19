@@ -154,32 +154,21 @@ void runOpenCLParallelIntepreter() {
     cout << "MedianParallel OpenCLTimer: " << medianTotalTime << endl;
 }
 
-
 void runOpenCLParallelIntepreterLoop() {
     int size = SIZE;
     int groupSize = 16;
-    vector<int> vectorAdd = {
+    vector<int> vectorMul = {
         THREAD_ID,
         DUP,
-        ICONST, groupSize,
-        IEQ,
-        BRT, 23,
-        DUP,    // offset for each array to load
-        DUP,    // offset for each array to load
-        PARALLEL_GLOAD_INDEXED, 0,
-        LOAD, 1,   // load index from position 1
-        PARALLEL_GLOAD_INDEXED, 1,
+        PARALLEL_GLOAD_INDEXED, 0,          
+        THREAD_ID,  
+        PARALLEL_GLOAD_INDEXED, 1,        
         IMUL,
         PARALLEL_GSTORE_INDEXED, 2,
-        ICONST1,
-        IADD,
-        BR, 1,
-        POP,
         HALT
     };
-
     vector<long> totalTime;
-    OCLVMParallelLoop oclVM(vectorAdd, 0);
+    OCLVMParallelLoop oclVM(vectorMul, 0);
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(1);

@@ -115,7 +115,7 @@ class OCLVMParallelLoop : public OCLVMParallel {
     public:
         OCLVMParallelLoop() {};
         OCLVMParallelLoop(vector<int> code, int mainByteCodeIndex);
-        void runInterpreter(size_t range, size_t range2);
+        void runInterpreter(size_t globalWordItems, size_t localWorkItems);
 
 };
 

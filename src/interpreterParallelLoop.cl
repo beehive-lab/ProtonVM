@@ -40,6 +40,7 @@
  * OpenCL code for the bytecode interpreter.
  * Multi-heap
  */
+ __attribute__((reqd_work_group_size(16,1,1)))
 __kernel void interpreter(__constant int* code, 
                           __global int* data1, 
                           __global int* data2, 
@@ -54,28 +55,27 @@ __kernel void interpreter(__constant int* code,
 
     int idx = get_global_id(0);
 
-    // Stack can be private
-    __local int stack[100];
-    __local int privateHeap1[256];
-    __local int privateHeap2[256];
-    __local int privateHeap3[256];
+    // Stack in private memory
+    __private int stack[100];
+
+    // Heaps in local memory
+    __local int privateHeap1[16];
+    __local int privateHeap2[16];
+    __local int privateHeap3[16];
 
     int lid = get_local_id(0);
 
     privateHeap1[lid] = data1[idx];
     privateHeap2[lid] = data2[idx];
     privateHeap3[lid] = data3[idx];
-
     // Wait for all threads within the workwroup
     barrier(CLK_LOCAL_MEM_FENCE);
 
     while (ip < codeSize) {
         int opcode = code[ip];
-
         ip++;
         int a, b, c, address, value, numArgs, offset, heapNumber;
         bool doHalt = false;
-
         switch (opcode) {
             case DUP:
                 // Duplicate the stack
@@ -234,8 +234,7 @@ __kernel void interpreter(__constant int* code,
                 stack[++sp] = value;  // return value on top of the stack
                 break;
             case THREAD_ID:
-                // Put on top of the stack the get_local_id(0)
-                value = lid;
+                value = get_local_id(0);
                 stack[++sp] = value;
                 break;
             case POP:
@@ -257,4 +256,4 @@ __kernel void interpreter(__constant int* code,
     data1[idx] = privateHeap1[lid];
     data2[idx] = privateHeap2[lid];
     data3[idx] = privateHeap3[lid];
-}
+}   

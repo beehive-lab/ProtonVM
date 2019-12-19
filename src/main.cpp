@@ -198,84 +198,6 @@ void testOpenCLInterpreterPrivate() {
     oclVM.runInterpreter();
 }
 
-void runBenchmarkCplus() {
-    // Vector multiplcation in a LOOP
-    vector<int> vectorAdd = {
-            ICONST, 0,
-            DUP,
-            ICONST, 50000000,    // Define the vector size
-            IEQ,
-            BRT, 23,
-            DUP,    // offset for each array to load
-            DUP,    // offset for each array to load
-            GLOAD_INDEXED, 50000000,
-            LOAD, 1,   // load from position 1
-            GLOAD_INDEXED, 100000000,
-            IADD,
-            GSTORE_INDEXED, 0,
-            ICONST1,
-            IMUL,
-            BR, 2,
-            POP,
-            HALT
-    };
-
-    vector<double> totalTime;
-
-    for (int i = 0; i < 11; i++) {
-        VM vm(vectorAdd,  0); 
-        vm.setVMConfig(100, 150000000);
-        vm.initHeap();
-        auto start_time = chrono::high_resolution_clock::now();
-        vm.runInterpreter();
-        auto end_time = chrono::high_resolution_clock::now();
-        double totalSeq = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count();
-        totalTime.push_back(totalSeq);
-    }
-
-    double medianTotalTime = median(totalTime);
-    cout << "Median TotalTime: " << medianTotalTime << endl;
-}
-
-void runBenchmarkOpenCL() {
-    // Vector addition in a LOOP
-    vector<int> vectorAdd = {
-            ICONST, 0,
-            DUP,
-            ICONST, 50000000,    // Define the vector size
-            IEQ,
-            BRT, 23,
-            DUP,    // offset for each array to load
-            DUP,    // offset for each array to load
-            GLOAD_INDEXED, 50000000,
-            LOAD, 1,   // load from position 1
-            GLOAD_INDEXED, 100000000,
-            IADD,
-            GSTORE_INDEXED, 0,
-            ICONST1,
-            IADD,
-            BR, 2,
-            POP,
-            HALT
-    };
-
-    vector<long> totalTime;
-
-    for (int i = 0; i < 11; i++) {
-        OCLVM oclVM(vectorAdd, 0);
-        oclVM.setVMConfig(100, 150000000);
-        oclVM.setPlatform(0);
-        oclVM.initOpenCL("src/interpreter.cl", false);
-        oclVM.initHeap();
-        oclVM.runInterpreter();
-        long kernelTime = oclVM.getKernelTime();
-        totalTime.push_back(kernelTime);
-    }
-
-    double medianTotalTime = median(totalTime);
-    cout << "Median OpenCLTimer: " << medianTotalTime << endl;
-}
-
 void runOpenCLParallelIntepreter() {
     vector<int> vectorAdd = {
             THREAD_ID,
@@ -296,38 +218,34 @@ void runOpenCLParallelIntepreter() {
     oclVM.runInterpreter(1024);
 }
 
-
+/**
+ * This parallel interpreter is fixed
+ * 
+ * Note: the stack has to either in global memory
+ *       or private memory. Otherwise results 
+*        are wrong.
+ */
 void runOpenCLParallelIntepreterLoop() {
     int size = 1024;
     int groupSize = 16;
-    vector<int> vectorAdd = {
+    vector<int> vectorMul = {
         THREAD_ID,
         DUP,
-        ICONST, groupSize,
-        IEQ,
-        BRT, 23,
-        DUP,    // offset for each array to load
-        DUP,    // offset for each array to load
-        PARALLEL_GLOAD_INDEXED, 0,
-        LOAD, 1,   // load index from position 1
-        PARALLEL_GLOAD_INDEXED, 1,
+        PARALLEL_GLOAD_INDEXED, 0,          
+        THREAD_ID,  
+        PARALLEL_GLOAD_INDEXED, 1,        
         IMUL,
         PARALLEL_GSTORE_INDEXED, 2,
-        ICONST1,
-        IADD,
-        BR, 1,
-        POP,
         HALT
     };
-    OCLVMParallelLoop oclVM(vectorAdd, 0);
-    oclVM.setVMConfig(100, size);
-    oclVM.setHeapSizes(size);
+    OCLVMParallelLoop oclVM(vectorMul, 0);
+    oclVM.setVMConfig(100, 1024);
+    oclVM.setHeapSizes(1024);
     oclVM.setPlatform(0);
     oclVM.initOpenCL("src/interpreterParallelLoop.cl", false);
     oclVM.initHeap();
-    oclVM.runInterpreter(size, groupSize);
+    oclVM.runInterpreter(1024, groupSize);
 }
-
 
 void runTests() {
     std::cout << "----" << endl;
@@ -345,13 +263,10 @@ void runTests() {
     testOpenCLInterpreter();
 }
 
-void runBenchmarks() {
-    runBenchmarkCplus();
-    runBenchmarkOpenCL();
-}
-
 int main(int argc, char** argv) {
-    runOpenCLParallelIntepreter();
+    //testHello();
+    //testOpenCLInterpreter();
+    //runOpenCLParallelIntepreter();
     runOpenCLParallelIntepreterLoop();
     return 0;
 }
