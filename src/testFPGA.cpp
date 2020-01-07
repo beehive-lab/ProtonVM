@@ -14,7 +14,7 @@ using namespace std;
 int SIZE = 1024;
 
 void runBenchmarkCplus() {
-    // Vector addition in a LOOP
+    // Vector multiplication in a LOOP
     vector<int> vectorAdd = {
             ICONST, 0,
             DUP,
@@ -26,7 +26,7 @@ void runBenchmarkCplus() {
             GLOAD_INDEXED, SIZE,
             LOAD, 1,   // load from position 1
             GLOAD_INDEXED, SIZE * 2,
-            IADD,
+            IMUL,
             GSTORE_INDEXED, 0,
             ICONST1,
             IADD,
@@ -52,9 +52,9 @@ void runBenchmarkCplus() {
     cout << "Median TotalTime: " << medianTotalTime << endl;
 }
 
-void runBenchmarkOpenCL() {
-    // Vector addition in a LOOP
-    vector<int> vectorAdd = {
+void runBenchmarkOpenCLSingleThread() {
+    // Vector multiplication in a LOOP
+    vector<int> vectorMul = {
             ICONST, 0,
             DUP,
             ICONST, SIZE,    // Define the vector size
@@ -65,7 +65,7 @@ void runBenchmarkOpenCL() {
             GLOAD_INDEXED, SIZE,
             LOAD, 1,   // load from position 1
             GLOAD_INDEXED, SIZE * 2,
-            IADD,
+            IMUL,
             GSTORE_INDEXED, 0,
             ICONST1,
             IADD,
@@ -76,8 +76,8 @@ void runBenchmarkOpenCL() {
 
     vector<long> totalTime;
 
-    // Run Global
-    OCLVM oclVM(vectorAdd, 0);
+    // Run OpenCL Interpreter Single Thread using Global Memory
+    OCLVM oclVM(vectorMul, 0);
     oclVM.setVMConfig(100, SIZE * 3);
     oclVM.setPlatform(1);
     oclVM.initOpenCL("src/build/mykerinterpreternel.xclbin", true);
@@ -93,8 +93,8 @@ void runBenchmarkOpenCL() {
 
     totalTime.clear();
 
-    // Run Local
-    OCLVMLocal oclVMLocal(vectorAdd, 0);
+    // Run OpenCL Interpreter Single Thread using Local Memory
+    OCLVMLocal oclVMLocal(vectorMul, 0);
     oclVMLocal.setVMConfig(100, SIZE * 3);
     oclVMLocal.setPlatform(1);
     oclVMLocal.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
@@ -108,10 +108,10 @@ void runBenchmarkOpenCL() {
     medianTotalTime = median(totalTime);
     cout << "MedianLocal OpenCLTimer: " << medianTotalTime << endl;
 
-
     totalTime.clear();
-    // Run Private
-    OCLVMPrivate oclVMPrivate(vectorAdd, 0);
+
+    // Run OpenCL Interpreter Single Thread using Private Memory
+    OCLVMPrivate oclVMPrivate(vectorMul, 0);
     oclVMPrivate.setVMConfig(100, SIZE * 3);
     oclVMPrivate.setPlatform(1);
     oclVMPrivate.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
@@ -121,13 +121,12 @@ void runBenchmarkOpenCL() {
         long kernelTime = oclVMPrivate.getKernelTime();
         totalTime.push_back(kernelTime);
     }
-
     medianTotalTime = median(totalTime);
     cout << "MedianPrivate OpenCLTimer: " << medianTotalTime << endl;
 }
 
 void runOpenCLParallelIntepreter() {
-    vector<int> vectorAdd = {
+    vector<int> vectorMul = {
             THREAD_ID,
             DUP,
             PARALLEL_GLOAD_INDEXED, 0,          
@@ -139,7 +138,7 @@ void runOpenCLParallelIntepreter() {
     };
     
     vector<long> totalTime;
-    OCLVMParallel oclVM(vectorAdd, 0);
+    OCLVMParallel oclVM(vectorMul, 0);
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(1);

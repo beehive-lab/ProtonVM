@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define DEBUG 0
+#define DEBUG 1
 
 OCLVM::OCLVM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
@@ -208,10 +208,16 @@ void OCLVM::runInterpreter() {
     // Obtain buffer and heap (DEVICE -> HOST)
     status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
     status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent[1]);
-     if (status != CL_SUCCESS) {
+    if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
     cout << "Program finished: " << endl;
+    if (DEBUG) {
+        for (auto i = 0; i < data.size(); i++) {
+            cout << data[i]  << " ";
+        }
+        cout << "\n";
+    }
 }
 
 // ====================================================================

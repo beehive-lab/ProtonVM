@@ -52,6 +52,45 @@ void runBenchmarkCplus() {
     cout << "Median TotalTime: " << medianTotalTime << endl;
 }
 
+void runBenchmarkOpenCLSingleThread() {
+    // Vector multiplication in a LOOP
+    vector<int> vectorMul = {
+            ICONST, 0,
+            DUP,
+            ICONST, SIZE,    // Define the vector size
+            IEQ,
+            BRT, 23,
+            DUP,    // offset for each array to load
+            DUP,    // offset for each array to load
+            GLOAD_INDEXED, SIZE,
+            LOAD, 1,   // load from position 1
+            GLOAD_INDEXED, SIZE * 2,
+            IMUL,
+            GSTORE_INDEXED, 0,
+            ICONST1,
+            IADD,
+            BR, 2,
+            POP,
+            HALT
+    };
+
+    vector<long> totalTime;
+
+    // Run OpenCL Interpreter Single Thread using Global Memory
+    OCLVM oclVM(vectorMul, 0);
+    oclVM.setVMConfig(100, SIZE * 3);
+    oclVM.setPlatform(0);
+    oclVM.initOpenCL("src/interpreter.cl", false);
+    for (int i = 0; i < 11; i++) {    
+        oclVM.initHeap();
+        oclVM.runInterpreter();
+        long kernelTime = oclVM.getKernelTime();
+        totalTime.push_back(kernelTime);
+    }
+    double medianTotalTime = median(totalTime);
+    cout << "MedianGlobal OpenCLTimer: " << medianTotalTime << endl;
+}
+
 void runOpenCLParallelIntepreter() {
     vector<int> vectorAdd = {
             THREAD_ID,
@@ -107,11 +146,12 @@ void runOpenCLParallelIntepreterLoop() {
         totalTime.push_back(kernelTime);
     }
     double medianTotalTime = median(totalTime);
-    cout << "MedianParallel OpenCLTimer: " << medianTotalTime << endl;
+    cout << "MedianParallelLoop OpenCLTimer: " << medianTotalTime << endl;
 }
 
 void runBenchmarks() {
     runBenchmarkCplus();
+    runBenchmarkOpenCLSingleThread();
     runOpenCLParallelIntepreterLoop();
 }
 
