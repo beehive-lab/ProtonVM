@@ -14,7 +14,7 @@ using namespace std;
 int SIZE = 1024;
 
 void runBenchmarkCplus() {
-    // Vector addition in a LOOP
+    // Vector multiplication in a LOOP
     vector<int> vectorAdd = {
             ICONST, 0,
             DUP,
@@ -26,7 +26,7 @@ void runBenchmarkCplus() {
             GLOAD_INDEXED, SIZE,
             LOAD, 1,   // load from position 1
             GLOAD_INDEXED, SIZE * 2,
-            IADD,
+            IMUL,
             GSTORE_INDEXED, 0,
             ICONST1,
             IADD,
@@ -115,7 +115,7 @@ void runBenchmarks() {
     runOpenCLParallelIntepreterLoop();
 }
 
-void runHello() {
+void runHelloWorld() {
     vector<int> hello = {
         ICONST, 128,
         ICONST, 1,

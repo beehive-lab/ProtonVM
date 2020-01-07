@@ -38,8 +38,7 @@ class OCLVM : public AbstractVM {
 
         long getKernelTime();
 
-        // Implementation of the Interpreter in 
-        // OpenCL C
+        // Implementation of the Interpreter in OpenCL C
         virtual void runInterpreter();
 
     protected:

@@ -175,7 +175,6 @@ void OCLVM::runInterpreter() {
         buffersCreated = true;
     }
 
-    
     // Copy code from HOST->DEVICE
     cl_int status = clEnqueueWriteBuffer(commandQueue, d_code, CL_TRUE, 0, codeSize * sizeof(int), code.data(), 0, NULL, &writeEvent[0]);
     status |= clEnqueueWriteBuffer(commandQueue, d_data, CL_TRUE, 0, dataSize * sizeof(int), data.data(), 0, NULL, &writeEvent[1]);
@@ -184,7 +183,7 @@ void OCLVM::runInterpreter() {
     }
     
     int t = (trace)? 1: 0;
-    // Push Arguments
+    // Set arguments to the kernel
 	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
     status |= clSetKernelArg(kernel1, 1, sizeof(cl_mem), &d_stack);
     status |= clSetKernelArg(kernel1, 2, sizeof(cl_mem), &d_data);
@@ -198,7 +197,7 @@ void OCLVM::runInterpreter() {
 		cout << "Error in clSetKernelArgs. Error code = " << status  << endl;
 	}
 
-    // Launch Kernel
+    // Launch Kernel with 1 thread local and global
     size_t globalWorkSize[] = {1};
     size_t localWorkSize[] = {1};
     status = clEnqueueNDRangeKernel(commandQueue, kernel1, 1, NULL, globalWorkSize, localWorkSize, 0, NULL, &kernelEvent);
@@ -206,16 +205,18 @@ void OCLVM::runInterpreter() {
 		cout << "Error in clEnqueueNDRangeKernel. Error code = " << status  << endl;
 	}
 
-    // Obtain buffer and heap
+    // Obtain buffer and heap (DEVICE -> HOST)
     status = clEnqueueReadBuffer(commandQueue, d_buffer, CL_TRUE, 0,  sizeof(char) * BUFFER_SIZE, buffer, 0, NULL, &readEvent[0]);
     status |= clEnqueueReadBuffer(commandQueue, d_data, CL_TRUE, 0,  sizeof(int) * data.size(), data.data(), 0, NULL, &readEvent[1]);
      if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
-
     cout << "Program finished: " << endl;
 }
 
+// ====================================================================
+// OCLVMLocal Class
+// ====================================================================
 OCLVMLocal::OCLVMLocal(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
@@ -280,6 +281,9 @@ void OCLVMLocal::runInterpreter() {
     cout << "Result: " << buffer;
 }
 
+// ====================================================================
+// OCLVMPrivate Class
+// ====================================================================
 OCLVMPrivate::OCLVMPrivate(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
@@ -343,6 +347,9 @@ void OCLVMPrivate::runInterpreter() {
     cout << "Result: " << buffer;
 }
 
+// ====================================================================
+// OCLVMParallel Class
+// ====================================================================
 OCLVMParallel::OCLVMParallel(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
@@ -421,9 +428,11 @@ void OCLVMParallel::runInterpreter(size_t range) {
      if (status != CL_SUCCESS) {
         cout << "Error in clEnqueueReadBuffer. Error code = " << status  << endl;
     }
-
 }
 
+// ====================================================================
+// OCLVMParallelLoop Class
+// ====================================================================
 OCLVMParallelLoop::OCLVMParallelLoop(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
     this->codeSize = code.size();
