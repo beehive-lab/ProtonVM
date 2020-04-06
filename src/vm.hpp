@@ -17,8 +17,7 @@ class VM : public AbstractVM {
 
         ~VM();
 
-        // Implementation of the Interpreter in 
-        // C++
+        // Implementation of the Interpreter in C++
         void runInterpreter();
 };
 

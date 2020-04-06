@@ -24,7 +24,6 @@ string print(Instruction ins) {
 
 Instruction* createAllInstructions() {
     static Instruction i[TOTAL_INSTRUCTIONS];
-
     i[1] = createInstruction("IADD");
     i[2] = createInstruction("ISUB");
     i[3] = createInstruction("IMUL");
