@@ -156,7 +156,6 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 
 void OCLVM::createBuffers() {
     this->buffer = new char[BUFFER_SIZE];
-
     // Create all buffers
     cl_int status;
  	d_code = clCreateBuffer(context, CL_MEM_READ_ONLY, codeSize * sizeof(int), NULL, &status);
@@ -169,7 +168,6 @@ void OCLVM::createBuffers() {
 }
 
 void OCLVM::runInterpreter() {
-
     if (!buffersCreated) {
         createBuffers();
         buffersCreated = true;
@@ -182,7 +180,7 @@ void OCLVM::runInterpreter() {
         cout << "Error in clEnqueueWriteBuffer. Error code = " << status  << endl;
     }
     
-    int t = (trace)? 1: 0;
+    int traceFlag = (trace)? 1: 0;
     // Set arguments to the kernel
 	status  = clSetKernelArg(kernel1, 0, sizeof(cl_mem), &d_code);
     status |= clSetKernelArg(kernel1, 1, sizeof(cl_mem), &d_stack);
@@ -192,7 +190,7 @@ void OCLVM::runInterpreter() {
     status |= clSetKernelArg(kernel1, 5, sizeof(cl_int), &ip);
     status |= clSetKernelArg(kernel1, 6, sizeof(cl_int), &fp);
     status |= clSetKernelArg(kernel1, 7, sizeof(cl_int), &sp);
-    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &t);
+    status |= clSetKernelArg(kernel1, 8, sizeof(cl_int), &traceFlag);
     if (status != CL_SUCCESS) {
 		cout << "Error in clSetKernelArgs. Error code = " << status  << endl;
 	}
@@ -506,7 +504,6 @@ void OCLVMParallelLoop::runInterpreter(size_t range1, size_t range2) {
         cout << "\n";
     }
 }
-
 
 // ///////////////////////////////////////////////////////
 // Private methods
