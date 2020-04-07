@@ -33,7 +33,6 @@ void VM::runInterpreter() {
 
         switch (opcode) {
             case DUP:
-                // Duplicate the stack
                 a = stack[sp];
                 stack[++sp] = a;
                 break;
@@ -97,7 +96,6 @@ void VM::runInterpreter() {
                 }
                 break;
             case ICONST:
-                // load constant into the stack
                 value = code[ip++];
                 stack[++sp] = value;
                 break;

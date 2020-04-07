@@ -42,7 +42,6 @@ function compileParallelLoopInterpreter {
     cd -
 }
 
-
 compileGlobalInterpreter
 compileLocalInterpreter
 compilePrivateInterpreter
