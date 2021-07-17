@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define DEBUG 0
+#define DEBUG 1
 
 OCLVM::OCLVM(vector<int> code, int mainByteCodeIndex) {
     this->code = code;
@@ -146,12 +146,18 @@ int OCLVM::initOpenCL(string kernelFilename, bool loadBinary) {
 
 	    cl_int buildErr;
 	    buildErr = clBuildProgram(program, numDevices, devices, NULL, NULL, NULL);
+        if (buildErr != CL_SUCCESS) {
+            cout << "Error in clBuildProgram. Error code = " << buildErr  << endl;
+		    abort();	
+        }
+
 	    kernel1 = clCreateKernel(program, "interpreter", &status);
 	    if (status != CL_SUCCESS) {
 		    cout << "Error in clCreateKernel. Error code = " << status  << endl;
-		    abort();	
+		    abort();
 	    }
     }
+    return 0;
 }
 
 void OCLVM::createBuffers() {

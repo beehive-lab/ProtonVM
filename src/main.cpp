@@ -234,7 +234,7 @@ void runOpenCLParallelIntepreterLoop() {
         PARALLEL_GLOAD_INDEXED, 0,          
         THREAD_ID,  
         PARALLEL_GLOAD_INDEXED, 1,        
-        IMUL,
+        IADD,
         PARALLEL_GSTORE_INDEXED, 2,
         HALT
     };

@@ -1,6 +1,8 @@
 #ifndef OCLVM_HPP
 #define OCLVM_HPP
 
+#define CL_TARGET_OPENCL_VERSION 300
+
 #include <iostream>
 #include <string>
 #include <vector>
