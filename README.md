@@ -2,7 +2,6 @@
 
 A Parallel Bytecode Interpreter implemented in OpenCL for running on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
 
-
 ### Example
 
 ```cpp
@@ -86,3 +85,8 @@ location = {Porto, Portugal},
 series = { '20}
 }
 ```
+
+
+## License 
+
+This project is developed at The University of Manchester, and it is fully open source under the [APACHE 2](https://www.apache.org/licenses/LICENSE-2.0) license.
