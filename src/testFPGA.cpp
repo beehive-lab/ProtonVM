@@ -78,7 +78,7 @@ void runBenchmarkOpenCLSingleThread() {
     OCLVM oclVM(vectorMul, 0);
     oclVM.setVMConfig(100, SIZE * 3);
     oclVM.setPlatform(1);
-    oclVM.initOpenCL("src/build/mykerinterpreternel.xclbin", true);
+    oclVM.initOpenCL("lib/build/mykerinterpreternel.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter();
@@ -95,7 +95,7 @@ void runBenchmarkOpenCLSingleThread() {
     OCLVMLocal oclVMLocal(vectorMul, 0);
     oclVMLocal.setVMConfig(100, SIZE * 3);
     oclVMLocal.setPlatform(1);
-    oclVMLocal.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
+    oclVMLocal.initOpenCL("lib/buildLocal/mykerinterpreternelLocal.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVMLocal.initHeap();
         oclVMLocal.runInterpreter();
@@ -112,7 +112,7 @@ void runBenchmarkOpenCLSingleThread() {
     OCLVMPrivate oclVMPrivate(vectorMul, 0);
     oclVMPrivate.setVMConfig(100, SIZE * 3);
     oclVMPrivate.setPlatform(1);
-    oclVMPrivate.initOpenCL("src/buildLocal/mykerinterpreternelLocal.xclbin", true);
+    oclVMPrivate.initOpenCL("lib/buildLocal/mykerinterpreternelLocal.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVMPrivate.initHeap();
         oclVMPrivate.runInterpreter();
@@ -140,7 +140,7 @@ void runOpenCLParallelIntepreter() {
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(1);
-    oclVM.initOpenCL("src/buildParallel/mykerinterpreternelParallel.xclbin", true);
+    oclVM.initOpenCL("lib/buildParallel/mykerinterpreternelParallel.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter(SIZE);
@@ -169,7 +169,7 @@ void runOpenCLParallelIntepreterLoop() {
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(1);
-    oclVM.initOpenCL("src/buildParallelLoop/mykerinterpreternelParallelLoop.xclbin", true);
+    oclVM.initOpenCL("lib/buildParallelLoop/mykerinterpreternelParallelLoop.xclbin", true);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter(SIZE, groupSize);

@@ -36,15 +36,20 @@ void runParallelOpenCLInterpreter() {
 
 #### How to build?
 
+###### a) Dependencies
+
 ```bash
-$ make 
-mkdir -p bin
-g++ -std=c++11 -O3 -c src/instruction.cpp -o bin/instruction.o
-g++ -std=c++11 -O3 -c src/vm.cpp -o bin/vm.o
-g++ -std=c++11 -O3 -c src/oclVM.cpp -o bin/oclVM.o
-g++ -std=c++11 bin/instruction.o bin/vm.o bin/oclVM.o -lOpenCL src/main.cpp -o bin/main
-g++ -std=c++11 bin/instruction.o bin/vm.o bin/oclVM.o -lOpenCL src/testFPGA.cpp -o bin/testFPGA
-g++ -std=c++11 bin/instruction.o bin/vm.o bin/oclVM.o -lOpenCL src/gpuBenchmark.cpp -o bin/gpuBenchmark
+cmake 
+GCC >= 9.0
+OpenCL >= 1.2 
+```
+
+Compile the project: 
+```bash
+mkdir build
+cd build
+cmake .. 
+make
 ```
 
 ##### How to run? 
@@ -52,7 +57,6 @@ g++ -std=c++11 bin/instruction.o bin/vm.o bin/oclVM.o -lOpenCL src/gpuBenchmark.
 ```bash
 $ bin/main
 ```
-
 
 ## Publications
 

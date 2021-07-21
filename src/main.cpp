@@ -154,7 +154,7 @@ void testVectorAdditionOpenCL() {
     oclVM.setTrace();
     oclVM.setPlatform(0);
     oclVM.initHeap();
-    oclVM.initOpenCL("src/interpreter.cl", false);
+    oclVM.initOpenCL("lib/interpreter.cl", false);
     oclVM.runInterpreter();
     oclVM.printHeap();
     cout << endl;
@@ -175,7 +175,7 @@ void testOpenCLInterpreter() {
     oclVM.setVMConfig(100, 100);
     oclVM.setPlatform(0);
     oclVM.setTrace();
-    oclVM.initOpenCL("src/interpreter.cl", false);
+    oclVM.initOpenCL("lib/interpreter.cl", false);
     oclVM.runInterpreter();
 }
 
@@ -194,7 +194,7 @@ void testOpenCLInterpreterLocal() {
     oclVM.setVMConfig(100, 100);
     oclVM.setPlatform(0);
     oclVM.setTrace();
-    oclVM.initOpenCL("src/interpreterLocal.cl", false);
+    oclVM.initOpenCL("lib/interpreterLocal.cl", false);
     oclVM.runInterpreter();
 }
 
@@ -214,7 +214,7 @@ void testOpenCLInterpreterPrivate() {
     oclVM.setVMConfig(100, 100);
     oclVM.setPlatform(0);
     oclVM.setTrace();
-    oclVM.initOpenCL("src/interpreterPrivate.cl", false);
+    oclVM.initOpenCL("lib/interpreterPrivate.cl", false);
     oclVM.runInterpreter();
 }
 
@@ -233,7 +233,7 @@ void runOpenCLParallelIntepreter() {
     oclVM.setVMConfig(100, 1024);
     oclVM.setHeapSizes(1024);
     oclVM.setPlatform(0);
-    oclVM.initOpenCL("src/interpreterParallel.cl", false);
+    oclVM.initOpenCL("lib/interpreterParallel.cl", false);
     oclVM.initHeap();
     oclVM.runInterpreter(1024);
 }
@@ -262,7 +262,7 @@ void runOpenCLParallelIntepreterLoop() {
     oclVM.setVMConfig(100, 1024);
     oclVM.setHeapSizes(1024);
     oclVM.setPlatform(0);
-    oclVM.initOpenCL("src/interpreterParallelLoop.cl", false);
+    oclVM.initOpenCL("lib/interpreterParallelLoop.cl", false);
     oclVM.initHeap();
     oclVM.runInterpreter(1024, groupSize);
 }

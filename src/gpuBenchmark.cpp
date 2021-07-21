@@ -78,7 +78,7 @@ void runBenchmarkOpenCLSingleThread() {
     OCLVM oclVM(vectorMul, 0);
     oclVM.setVMConfig(100, SIZE * 3);
     oclVM.setPlatform(0);
-    oclVM.initOpenCL("src/interpreter.cl", false);
+    oclVM.initOpenCL("lib/interpreter.cl", false);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter();
@@ -106,7 +106,7 @@ void runOpenCLParallelIntepreter() {
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(0);
-    oclVM.initOpenCL("src/interpreterParallel.cl", false);
+    oclVM.initOpenCL("lib/interpreterParallel.cl", false);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter(SIZE);
@@ -136,7 +136,7 @@ void runOpenCLParallelIntepreterLoop() {
     oclVM.setVMConfig(100, SIZE);
     oclVM.setHeapSizes(SIZE);
     oclVM.setPlatform(0);
-    oclVM.initOpenCL("src/interpreterParallelLoop.cl", false);
+    oclVM.initOpenCL("lib/interpreterParallelLoop.cl", false);
     for (int i = 0; i < 11; i++) {    
         oclVM.initHeap();
         oclVM.runInterpreter(SIZE, groupSize);
