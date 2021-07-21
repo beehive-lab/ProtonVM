@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include "instruction.hpp"
-#include "bytecodes.hpp"
 #include "oclVM.hpp"
 
 #include <stdio.h>

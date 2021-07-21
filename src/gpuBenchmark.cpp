@@ -1,11 +1,9 @@
-#include <string>
 #include <iostream>
 #include <vector>
 #include <chrono>
 #include <algorithm>
 using namespace std;
 
-#include "instruction.hpp"
 #include "bytecodes.hpp"
 #include "vm.hpp"
 #include "oclVM.hpp"

@@ -1,7 +1,6 @@
-## Parallel Bytecode Interpreter 
+## ParallelBC: Parallel Bytecode Interpreter 
 
-A Parallel Bytecode Interpreter implemented in OpenCL for running on heterogenous architectures (multi-core CPUs, GPUs and FPGAs).
-
+A Parallel Bytecode Interpreter implemented in OpenCL for running on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
 
 
 ### Example
@@ -35,10 +34,6 @@ void runParallelOpenCLInterpreter() {
 }
 ```
 
-
-
-
-
 #### How to build?
 
 ```bash
@@ -56,4 +51,34 @@ g++ -std=c++11 bin/instruction.o bin/vm.o bin/oclVM.o -lOpenCL src/gpuBenchmark.
 
 ```bash
 $ bin/main
+```
+
+
+## Publications
+
+This work has been presented at [MoreVMs 2020](https://2020.programming-conference.org/details/MoreVMs-2020-papers/7/Running-Parallel-Bytecode-Interpreters-on-Heterogeneous-Hardware).
+
+Link to the paper: [ACM DL](https://dl.acm.org/doi/abs/10.1145/3397537.3397563).
+
+Video presentation: [YouTube](https://www.youtube.com/watch?v=mok6crMdKgI)
+
+Recommended citation:
+
+```bibtex
+@inproceedings{10.1145/3397537.3397563,
+author = {Fumero, Juan and Stratikopoulos, Athanasios and Kotselidis, Christos},
+title = {Running Parallel Bytecode Interpreters on Heterogeneous Hardware},
+year = {2020},
+isbn = {9781450375078},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3397537.3397563},
+doi = {10.1145/3397537.3397563},
+booktitle = {Conference Companion of the 4th International Conference on Art, Science, and Engineering of Programming},
+pages = {31–35},
+numpages = {5},
+keywords = {Heterogeneous Architectures, Interpreters, Bytecode, FPGAs, GPUs},
+location = {Porto, Portugal},
+series = { '20}
+}
 ```
