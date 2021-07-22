@@ -17,7 +17,15 @@
  */
 
 /**
- * OpenCL interpreter for running a subset of Java bytecodes.
+ * OpenCL Parallel interpreter for running a subset of Java bytecodes. This version of the interpreter is prepared for running
+ * with a multi-thread bytecode interpreter exploiting data parallelization. Each thread has its own stack and it performs
+ * exactly the same computation accross threads. The OpenCL kernel is programmed to do the work per thread.
+ *
+ * Furthermore, this version uses a multi-heap (3 in this case), that allows accessing data in parallel. There are two
+ * heaps dedicated to read-only and one for write-only.
+ *
+ * The stack as well as the heaps are accessed using local memory.
+ *
  */
 
 #define IADD     1
@@ -107,13 +115,13 @@ __kernel void interpreter(__constant int* code,
 
     // Stack can be private
     __local int stack[100];
-    __local int privateHeap1[1024];
-    __local int privateHeap2[1024];
-    __local int privateHeap3[1024];
+    __local int localHeap1[1024];
+    __local int localHeap2[1024];
+    __local int localHeap3[1024];
 
-    privateHeap1[idx] = data1[idx];
-    privateHeap2[idx] = data2[idx];
-    privateHeap3[idx] = data3[idx];
+    localHeap1[idx] = data1[idx];
+    localHeap2[idx] = data2[idx];
+    localHeap3[idx] = data3[idx];
     
 
     while (ip < codeSize) {
@@ -230,13 +238,13 @@ __kernel void interpreter(__constant int* code,
                 offset = stack[sp--];
                 switch (heapNumber) {
                     case 0:
-                        value = privateHeap1[offset];      
+                        value = localHeap1[offset];
                         break;
                     case 1:
-                        value = privateHeap2[offset];      
+                        value = localHeap2[offset];
                         break;
                     case 2:
-                        value = privateHeap3[offset];      
+                        value = localHeap3[offset];
                         break;
                 }
                 stack[++sp] = value;
@@ -253,13 +261,13 @@ __kernel void interpreter(__constant int* code,
                 heapNumber = code[ip++];
                 switch (heapNumber) {
                     case 0:
-                        privateHeap1[offset] = value;
+                        localHeap1[offset] = value;
                         break;
                     case 1:
-                        privateHeap2[offset] = value;
+                        localHeap2[offset] = value;
                         break;
                     case 2:
-                        privateHeap3[offset] = value;
+                        localHeap3[offset] = value;
                         break;
                 }
                 break;
@@ -309,7 +317,7 @@ __kernel void interpreter(__constant int* code,
     }
 
     // Copy to global memory
-    data1[idx] = privateHeap1[idx];
-    data2[idx] = privateHeap2[idx];
-    data3[idx] = privateHeap3[idx];
+    data1[idx] = localHeap1[idx];
+    data2[idx] = localHeap2[idx];
+    data3[idx] = localHeap3[idx];
 }

@@ -17,7 +17,9 @@
  */
 
 /**
- * OpenCL interpreter for running a subset of Java bytecodes.
+ * OpenCL interpreter for running a subset of Java bytecodes. This version of the interpreter is prepared for running
+ * with a single device's thread. It runs the whole application on the device using a single heap and stack stored in
+ * global memory.
  */
 
 #define IADD     1

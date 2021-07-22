@@ -25,6 +25,10 @@ using namespace std;
 #include "vm.hpp"
 #include "oclVM.hpp"
 
+/// Run the hello world program.
+/// This function computes an addition between two numbers of top of the stack and stores the result
+/// in main memory.
+/// This functions runs the sequential BC interpreter implemented in C++.
 void testHello() {
     vector<int> hello = {
         ICONST, 128,
@@ -41,6 +45,7 @@ void testHello() {
     vm.runInterpreter();
 }
 
+/// Test for running the sequential C++ BC interpreter on CPU.
 void testProgram1() {
     vector<int> program1 = {
         ICONST, 100,
@@ -57,6 +62,7 @@ void testProgram1() {
     vm.runInterpreter();
 }
 
+/// Test for running the sequential C++ BC interpreter on CPU.
 void testProgram2() {
     vector<int> program2 = {
         ICONST, 100,
@@ -73,6 +79,7 @@ void testProgram2() {
     vm.runInterpreter();
 }
 
+/// Test function calls for the sequential C++ BC interpreter on CPU.
 void testFunction() {
     vector<int> functionCall = {
         // Instruction    address
@@ -92,6 +99,7 @@ void testFunction() {
     vm.runInterpreter();
 }
 
+/// Test the vector addition on CPU using the sequential C++ BC interpreter.
 void testVectorAddition() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
@@ -122,6 +130,9 @@ void testVectorAddition() {
     cout << endl;
 }
 
+/// Test for running vector addition with OpenCL on any heterogeneous device (e.g., a GPU).
+/// OCLVM runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
+/// thread kernel that runs the whole application on the device.
 void testVectorAdditionOpenCL() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
@@ -143,7 +154,7 @@ void testVectorAdditionOpenCL() {
             POP,
             HALT
     };
-    OCLVM oclVM(vectorAdd, 0);
+    OCLVM oclVM(vectorAdd, 0);    /// OpenCL BC interpreter (single-thread).
     oclVM.setVMConfig(100, 100);
     oclVM.setTrace();
     oclVM.setPlatform(0);
@@ -154,6 +165,9 @@ void testVectorAdditionOpenCL() {
     cout << endl;
 }
 
+/// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
+/// OCLVM runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
+/// thread kernel that runs the whole application on the device.
 void testOpenCLInterpreter() {
     vector<int> hello = {
         ICONST, 128,

@@ -17,7 +17,12 @@
  */
 
 /**
- * OpenCL interpreter for running a subset of Java bytecodes.
+ * OpenCL interpreter for running a subset of Java bytecodes. This version of the interpreter is prepared for running
+ * with a single device's thread. It runs the whole application on the device using a single heap in global memory
+ * and the stack is stored in private memory. Since the application runs using a single device thread, the stack
+ * contains the whole state for the application.
+ *
+ * Running this version on the FPGA will result in a faster execution because private memory uses internal memory registers.
  */
 
 #define IADD     1
@@ -98,7 +103,7 @@ __kernel void interpreter(__constant int* code,
     char valueString[] = {'[', 'V', 'M', ']', ' ', '=', ' '};
     int bufferIndex = 0;
 
-    int stack[100];
+    __private int stack[100];
 
     while (ip < codeSize) {
         int opcode = code[ip];
