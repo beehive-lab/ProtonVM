@@ -1,6 +1,49 @@
-## ParallelBC: Parallel Bytecode Interpreter 
+# ProtonVM: Parallel Bytecode Interpreter For Heterogeneous Hardware 
 
-A Parallel Bytecode Interpreter implemented in OpenCL for running on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
+In a nutshell, ProtoVM is a Parallel Bytecode Interpreter (BC) implemented in OpenCL for running interpreters on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
+
+ProtonVM is presented as a proof of concept for running a subset of the Java bytecodes in C++ and OpenCL. The bytecodes defined correspond to an extension of the small-subset 
+of Java bytecode explained by Terence Parr, from the University of San Francisco of how to [build a simple Virtual Machine](https://www.youtube.com/watch?v=OjaAToVkoTw). 
+This project extends this simple bytecode interpreter to study the feasibility of  running, as efficiently as possible, parallel bytecode interpreters on
+heterogeneous computer architectures.
+
+ProtonVM has been presented at [MoreVMs 2020](https://www.youtube.com/watch?v=mok6crMdKgI) and it has been executed on NVIDIA GPUs, Intel HD Graphics and Xilinx FPGAs. 
+
+### Bytecode Instructions 
+
+```cpp
+#define IADD     1
+#define ISUB     2
+#define IMUL     3
+#define ILT      4
+#define IEQ      5
+#define BR       6
+#define BRT      7   // branch if true
+#define BRF      8   // branch if false
+#define ICONST   9
+#define LOAD    10
+#define GLOAD   11
+#define STORE   12
+#define GSTORE  13
+#define PRINT   14
+#define POP     15
+#define HALT    16
+#define CALL    17
+#define RET     18
+#define DUP     19   // duplicate the top of the stack
+#define IDIV    20   // integer division
+#define LSHIFT  21   // shift to the left (multiply by two)
+#define RSHIFT  22   // shift to the left (multiply by two)
+#define ICONST1 23   // load constant 1 into the stack
+
+#define GLOAD_INDEXED  24  // top_stack <- global[top-stack]
+#define GSTORE_INDEXED 25
+ 
+#define THREAD_ID 26                 // load thread-id on top of the stack
+#define PARALLEL_GLOAD_INDEXED 27    // load data by accessing device's heap using the thread-id (multi-heap configuration)
+#define PARALLEL_GSTORE_INDEXED 28   // store data by accessing device's heap using the thread-id (multi-heap configuration)
+```
+
 
 ### Example
 
@@ -85,7 +128,6 @@ location = {Porto, Portugal},
 series = { '20}
 }
 ```
-
 
 ## License 
 
