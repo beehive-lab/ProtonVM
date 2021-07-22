@@ -7,6 +7,9 @@ of Java bytecode explained by Terence Parr, from the University of San Francisco
 This project extends this simple bytecode interpreter to study the feasibility of  running, as efficiently as possible, parallel bytecode interpreters on
 heterogeneous computer architectures.
 
+ProtonVM currently runs integer arithmetic only. A possible extension is to include `fp32` and `fp64` math arithmetic and support complex math operations. This way we could take 
+advantage of the compute-power of modern GPUs, and DSPs available on FPGAs. 
+
 ProtonVM has been presented at [MoreVMs 2020](https://www.youtube.com/watch?v=mok6crMdKgI) and it has been executed on NVIDIA GPUs, Intel HD Graphics and Xilinx FPGAs. 
 
 ### Bytecode Instructions 
