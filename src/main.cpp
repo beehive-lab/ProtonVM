@@ -25,10 +25,12 @@ using namespace std;
 #include "vm.hpp"
 #include "oclVM.hpp"
 
+/// ***************************************************************************************************************************
 /// Run the hello world program.
 /// This function computes an addition between two numbers of top of the stack and stores the result
 /// in main memory.
 /// This functions runs the sequential BC interpreter implemented in C++.
+/// ***************************************************************************************************************************
 void testHello() {
     vector<int> hello = {
         ICONST, 128,
@@ -45,7 +47,9 @@ void testHello() {
     vm.runInterpreter();
 }
 
+/// ***************************************************************************************************************************
 /// Test for running the sequential C++ BC interpreter on CPU.
+/// ***************************************************************************************************************************
 void testProgram1() {
     vector<int> program1 = {
         ICONST, 100,
@@ -62,7 +66,9 @@ void testProgram1() {
     vm.runInterpreter();
 }
 
+/// ***************************************************************************************************************************
 /// Test for running the sequential C++ BC interpreter on CPU.
+/// ***************************************************************************************************************************
 void testProgram2() {
     vector<int> program2 = {
         ICONST, 100,
@@ -79,7 +85,9 @@ void testProgram2() {
     vm.runInterpreter();
 }
 
+/// ***************************************************************************************************************************
 /// Test function calls for the sequential C++ BC interpreter on CPU.
+/// ***************************************************************************************************************************
 void testFunction() {
     vector<int> functionCall = {
         // Instruction    address
@@ -99,7 +107,9 @@ void testFunction() {
     vm.runInterpreter();
 }
 
+/// ***************************************************************************************************************************
 /// Test the vector addition on CPU using the sequential C++ BC interpreter.
+/// ***************************************************************************************************************************
 void testVectorAddition() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
@@ -130,9 +140,11 @@ void testVectorAddition() {
     cout << endl;
 }
 
+/// ***************************************************************************************************************************
 /// Test for running vector addition with OpenCL on any heterogeneous device (e.g., a GPU).
 /// OCLVM runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
 /// thread kernel that runs the whole application on the device.
+/// ***************************************************************************************************************************
 void testVectorAdditionOpenCL() {
     // Vector addition in a LOOP
     vector<int> vectorAdd = {
@@ -165,9 +177,11 @@ void testVectorAdditionOpenCL() {
     cout << endl;
 }
 
+/// ***************************************************************************************************************************
 /// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
 /// OCLVM runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
 /// thread kernel that runs the whole application on the device.
+/// ***************************************************************************************************************************
 void testOpenCLInterpreter() {
     vector<int> hello = {
         ICONST, 128,
@@ -187,6 +201,12 @@ void testOpenCLInterpreter() {
     oclVM.runInterpreter();
 }
 
+/// ***************************************************************************************************************************
+/// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
+/// OCLVMLocal runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
+/// thread kernel that runs the whole application on the device. The stack is stored in local (shared) memory. This version was designed
+/// only for testing on FPGAs and analyze the resource utilization.
+/// ***************************************************************************************************************************
 void testOpenCLInterpreterLocal() {
     vector<int> hello = {
         ICONST, 128,
@@ -206,7 +226,11 @@ void testOpenCLInterpreterLocal() {
     oclVM.runInterpreter();
 }
 
-
+/// ***************************************************************************************************************************
+/// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
+/// OCLVMPrivate runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
+/// thread kernel that runs the whole application on the device. The stack is stored in private memory.
+/// ***************************************************************************************************************************
 void testOpenCLInterpreterPrivate() {
     vector<int> hello = {
         ICONST, 128,
@@ -226,7 +250,17 @@ void testOpenCLInterpreterPrivate() {
     oclVM.runInterpreter();
 }
 
-void runOpenCLParallelIntepreter() {
+/// ***************************************************************************************************************************
+/// Parallel BC Interpreter
+/// ***************************************************************************************************************************
+/// Test for running simple multiplication using the **PARALLEL** OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
+/// OCLVMParallel launches many threads (as many as data items to compute). The stack is stored in local memory. Additionally,
+/// this version uses a multi-heap approach and it makes uses of the BC THREAD_ID, which loads the thread-id onto the stack,
+/// and PARALLEL_GLOAD_INDEXED,PARALLEL_GSTORE_INDEXED for accessing data using the thread-id in a multi-heap configuration.
+///
+/// This version was designed as an initial version for testing on FPGAs. Use the OCLVMParallelLoop instead.
+/// ***************************************************************************************************************************
+void runOpenCLParallelInterpreter() {
     vector<int> vectorAdd = {
             THREAD_ID,
             DUP,
@@ -246,9 +280,15 @@ void runOpenCLParallelIntepreter() {
     oclVM.runInterpreter(1024);
 }
 
+/// ***************************************************************************************************************************
+/// Parallel BC Interpreter: v2
+/// ***************************************************************************************************************************1
+/// Test for running simple multiplication using the **PARALLEL** OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
+/// OCLVMParallel launches many threads (as many as data items to compute). The stack is stored in private memory. Additionally,
+/// this version uses a multi-heap approach and it makes uses of the BC THREAD_ID, which loads the thread-id onto the stack,
+/// and PARALLEL_GLOAD_INDEXED,PARALLEL_GSTORE_INDEXED for accessing data using the thread-id in a multi-heap configuration.
+/// ***************************************************************************************************************************
 /**
- * This parallel interpreter is fixed
- * 
  * Note: the stack has to either in global memory
  *       or private memory. Otherwise results 
 *        are wrong.
@@ -294,7 +334,7 @@ void runTests() {
 int main(int argc, char** argv) {
     //testHello();
     //testOpenCLInterpreter();
-    //runOpenCLParallelIntepreter();
+    //runOpenCLParallelInterpreter();
     runOpenCLParallelIntepreterLoop();
     return 0;
 }
