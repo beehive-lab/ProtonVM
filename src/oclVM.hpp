@@ -100,14 +100,6 @@ class OCLVM : public AbstractVM {
         const int BUFFER_SIZE = 100000;
 };
 
-class OCLVMLocal : public OCLVM {
-    public:
-        OCLVMLocal() {};
-        OCLVMLocal(vector<int> code, int mainByteCodeIndex);
-        void runInterpreter();
-
-};
-
 class OCLVMPrivate : public OCLVM {
     public:
         OCLVMPrivate() {};
@@ -124,7 +116,7 @@ class OCLVMParallel : public OCLVM {
         void setHeapSizes(int dataSize);
         void initHeap();
 
-    protected: 
+    protected:
         vector<int> data1;
         vector<int> data2;
         vector<int> data3;

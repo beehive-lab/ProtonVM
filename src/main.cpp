@@ -203,31 +203,6 @@ void testOpenCLInterpreter() {
 
 /// ***************************************************************************************************************************
 /// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
-/// OCLVMLocal runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
-/// thread kernel that runs the whole application on the device. The stack is stored in local (shared) memory. This version was designed
-/// only for testing on FPGAs and analyze the resource utilization.
-/// ***************************************************************************************************************************
-void testOpenCLInterpreterLocal() {
-    vector<int> hello = {
-        ICONST, 128,
-        ICONST, 1,
-        IADD,
-        GSTORE, 0,
-        GLOAD, 0,
-        PRINT,
-        HALT
-    };
-    // OpenCL Interpreter
-    OCLVMLocal oclVM(hello, 0);
-    oclVM.setVMConfig(100, 100);
-    oclVM.setPlatform(0);
-    oclVM.setTrace();
-    oclVM.initOpenCL("lib/interpreterLocal.cl", false);
-    oclVM.runInterpreter();
-}
-
-/// ***************************************************************************************************************************
-/// Test for running simple addition using the single-threaded OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
 /// OCLVMPrivate runs a sequential BC interpreter on the GPU. This means that ProtoVM launches a single
 /// thread kernel that runs the whole application on the device. The stack is stored in private memory.
 /// ***************************************************************************************************************************
@@ -252,36 +227,6 @@ void testOpenCLInterpreterPrivate() {
 
 /// ***************************************************************************************************************************
 /// Parallel BC Interpreter
-/// ***************************************************************************************************************************
-/// Test for running simple multiplication using the **PARALLEL** OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
-/// OCLVMParallel launches many threads (as many as data items to compute). The stack is stored in local memory. Additionally,
-/// this version uses a multi-heap approach and it makes uses of the BC THREAD_ID, which loads the thread-id onto the stack,
-/// and PARALLEL_GLOAD_INDEXED,PARALLEL_GSTORE_INDEXED for accessing data using the thread-id in a multi-heap configuration.
-///
-/// This version was designed as an initial version for testing on FPGAs. Use the OCLVMParallelLoop instead.
-/// ***************************************************************************************************************************
-void runOpenCLParallelInterpreter() {
-    vector<int> vectorAdd = {
-            THREAD_ID,
-            DUP,
-            PARALLEL_GLOAD_INDEXED, 0,          
-            THREAD_ID,  
-            PARALLEL_GLOAD_INDEXED, 1,        
-            IMUL,
-            PARALLEL_GSTORE_INDEXED, 2,
-            HALT
-    };
-    OCLVMParallel oclVM(vectorAdd, 0);
-    oclVM.setVMConfig(100, 1024);
-    oclVM.setHeapSizes(1024);
-    oclVM.setPlatform(0);
-    oclVM.initOpenCL("lib/interpreterParallel.cl", false);
-    oclVM.initHeap();
-    oclVM.runInterpreter(1024);
-}
-
-/// ***************************************************************************************************************************
-/// Parallel BC Interpreter: v2
 /// ***************************************************************************************************************************1
 /// Test for running simple multiplication using the **PARALLEL** OpenCL BC interpreter on any heterogeneous device (e.g., a GPU).
 /// OCLVMParallel launches many threads (as many as data items to compute). The stack is stored in private memory. Additionally,

@@ -21,14 +21,14 @@ add_executable(main src/main.cpp src/instruction.cpp src/vm.cpp src/oclVM.cpp)
 add_executable(gpuBenchmark src/gpuBenchmark.cpp src/instruction.cpp src/vm.cpp src/oclVM.cpp)
 add_executable(testFPGA src/testFPGA.cpp src/instruction.cpp src/vm.cpp src/oclVM.cpp)
 
+add_custom_target(build-time-make-directory ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory lib)
+
 add_custom_command(
         TARGET main  POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cl
         ${CMAKE_CURRENT_BINARY_DIR}/lib/)
-
-add_custom_target(build-time-make-directory ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory lib)
 
 target_link_libraries(main ${OpenCL_LIBRARIES})
 target_link_libraries(gpuBenchmark ${OpenCL_LIBRARIES})

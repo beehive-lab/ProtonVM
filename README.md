@@ -94,7 +94,7 @@ Compile the project:
 mkdir build
 cd build
 cmake .. 
-make
+make -j 12
 ```
 
 ##### How to run? 

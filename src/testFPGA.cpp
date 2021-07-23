@@ -109,23 +109,6 @@ void runBenchmarkOpenCLSingleThread() {
 
     totalTime.clear();
 
-    // Run OpenCL Interpreter Single Thread using Local Memory
-    OCLVMLocal oclVMLocal(vectorMul, 0);
-    oclVMLocal.setVMConfig(100, SIZE * 3);
-    oclVMLocal.setPlatform(1);
-    oclVMLocal.initOpenCL("lib/buildLocal/mykerinterpreternelLocal.xclbin", true);
-    for (int i = 0; i < 11; i++) {    
-        oclVMLocal.initHeap();
-        oclVMLocal.runInterpreter();
-        long kernelTime = oclVMLocal.getKernelTime();
-        totalTime.push_back(kernelTime);
-    }
-
-    medianTotalTime = median(totalTime);
-    cout << "MedianLocal OpenCLTimer: " << medianTotalTime << endl;
-
-    totalTime.clear();
-
     // Run OpenCL Interpreter Single Thread using Private Memory
     OCLVMPrivate oclVMPrivate(vectorMul, 0);
     oclVMPrivate.setVMConfig(100, SIZE * 3);
