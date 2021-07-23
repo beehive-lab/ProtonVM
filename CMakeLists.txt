@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(parallelbitCodeInterpreter)
+project(protonVM)
 
 # set the C++14 standard
 set(CMAKE_CXX_STANDARD 14)
