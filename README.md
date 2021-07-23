@@ -88,9 +88,9 @@ void runParallelOpenCLInterpreter() {
 }
 ```
 
-#### How to build?
+## How to build?
 
-###### a) Dependencies
+##### a) Dependencies
 
 ```bash
 cmake 
@@ -98,7 +98,7 @@ GCC >= 9.0
 OpenCL >= 1.2 
 ```
 
-Compile the project: 
+##### b) Compile the project: 
 ```bash
 mkdir build
 cd build
