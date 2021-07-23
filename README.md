@@ -51,12 +51,10 @@ ProtonVM has been presented at [MoreVMs 2020](https://www.youtube.com/watch?v=mo
 
 ProtonVM provides different variations of the BC interpreter for testing and experimentation:
 
-* `VM`: this is the baseline BC interpreter implemented in C++. It runs sequentially on CPU.
-* `OCLVM`: OpenCL BC interpreter. It is prepared for running a single device thread on the target device. The stack, data and code sections are stored on device's global memory.
-* `OCLVMPrivate`:  OpenCL BC interpreter. It is prepared for running a single device thread on the target device. The stack is stored in private memory, and data and code sections are stored on device's global memory.
-* `OCLVMParallelLoop`: This version of the interpreter is prepared for running with a multi-thread bytecode interpreter exploiting data parallelization. Each thread has its own stack and it performs
- exactly the same computation across threads. The OpenCL kernel is programmed to do the work per thread. Furthermore, this version uses a multi-heap (3 in this case), that allows accessing data in parallel. There are two heaps dedicated to read-only and one for write-only.
-The stack is stored in private memory, and the heaps are accessed using local memory.
+* `VM`: this is the baseline BC interpreter implemented in C++. It runs sequentially on the CPU.
+* `OCLVM`: Single-thread OpenCL BC interpreter. It is prepared for running a single device thread on the target device. The stack, data and code sections are stored on device's global memory.
+* `OCLVMPrivate`:  Single-thread OpenCL BC interpreter. It is prepared for running a single device thread on the target device. The stack is stored in private memory, and data and code sections are stored on device's global memory.
+* `OCLVMParallelLoop`: This version of the interpreter is prepared for running with a multi-thread bytecode interpreter exploiting data parallelization. Each thread has its own stack and it performs exactly the same computation across device's threads. The OpenCL kernel is programmed to do the work per thread. Furthermore, this version uses a multi-heap (3 in this case), that allows accessing data in parallel. There are two heaps dedicated to read-only and one for write-only. The stack is stored in private memory, and the heaps are accessed using local memory.
 
 
 ### Example
