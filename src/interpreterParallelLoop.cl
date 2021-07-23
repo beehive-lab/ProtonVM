@@ -17,7 +17,15 @@
  */
 
 /**
- * OpenCL interpreter for running a subset of Java bytecodes.
+ * OpenCL Parallel interpreter for running a subset of Java bytecodes. This version of the interpreter is prepared for running
+ * with a multi-thread bytecode interpreter exploiting data parallelization. Each thread has its own stack and it performs
+ * exactly the same computation across threads. The OpenCL kernel is programmed to do the work per thread.
+ *
+ * Furthermore, this version uses a multi-heap (3 in this case), that allows accessing data in parallel. There are two
+ * heaps dedicated to read-only and one for write-only.
+ *
+ * The stack is stored in private memory and the heaps are accessed using local memory.
+ *
  */
 
 #define IADD     1
@@ -54,17 +62,6 @@
 #define TRUE    1
 #define FALSE   0
 
-/**
- * OpenCL Parallel interpreter for running a subset of Java bytecodes. This version of the interpreter is prepared for running
- * with a multi-thread bytecode interpreter exploiting data parallelization. Each thread has its own stack and it performs
- * exactly the same computation accross threads. The OpenCL kernel is programmed to do the work per thread.
- *
- * Furthermore, this version uses a multi-heap (3 in this case), that allows accessing data in parallel. There are two
- * heaps dedicated to read-only and one for write-only.
- *
- * The stack is stored in private memory and the heaps are accessed using local memory.
- *
- */
  __attribute__((reqd_work_group_size(16,1,1)))
 __kernel void interpreter(__constant int* code, 
                           __global int* data1, 
