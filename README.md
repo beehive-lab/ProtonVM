@@ -1,13 +1,13 @@
 # ProtonVM: Parallel Bytecode Interpreter For Heterogeneous Hardware 
 
-In a nutshell, ProtoVM is a tiny Parallel Bytecode Interpreter (BC) implemented in OpenCL for running interpreters on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
+In a nutshell, ProtoVM is a tiny Parallel Java Bytecode Interpreter (BC) implemented in OpenCL capable of executing on heterogeneous architectures (multi-core CPUs, GPUs and FPGAs).
 
-ProtonVM is presented as a proof of concept for running a subset of the Java bytecodes in C++ and OpenCL. The bytecodes defined correspond to an extension of the small-subset 
+ProtonVM is a proof-of-concept for running a subset of the Java bytecodes in C++ and OpenCL. The bytecodes defined correspond to an extension of the small-subset 
 of Java bytecode explained by Terence Parr, from the University of San Francisco of how to [build a simple Virtual Machine](https://www.youtube.com/watch?v=OjaAToVkoTw). 
 This project extends this simple bytecode interpreter to study the feasibility of  running, as efficiently as possible, parallel bytecode interpreters on
 heterogeneous computer architectures.
 
-ProtonVM currently runs integer arithmetic only. A possible extension is to include `fp32` and `fp64` math arithmetic and support complex math operations. This way we could take 
+ProtonVM currently runs integer arithmetic only. A possible extension is to include `fp32` and `fp64` math arithmetic and support complex math operations. This way ProtonVM could take 
 advantage of the compute-power of modern GPUs, and DSPs available on FPGAs. 
 
 ProtonVM has been presented at [MoreVMs 2020](https://www.youtube.com/watch?v=mok6crMdKgI) and it has been executed on NVIDIA GPUs, Intel HD Graphics and Xilinx FPGAs.
@@ -135,3 +135,7 @@ series = { '20}
 ## License 
 
 This project is developed at The University of Manchester, and it is fully open source under the [APACHE 2](https://www.apache.org/licenses/LICENSE-2.0) license.
+
+## Acknowledgments
+
+The work was partially funded by the EU Horizon 2020 [Elegant 957286](https://www.elegant-h2020.eu/) and [E2Data 780245](https://e2data.eu) projects.
