@@ -60,6 +60,7 @@ ProtonVM provides different variations of the BC interpreter for testing and exp
 ### Example
 
 ```cpp
+// Run Vector Multiplication with ProtonVM on GPUs and FPGAs 
 void runParallelOpenCLInterpreter() {
     int size = 1024;
     int groupSize = 16;
